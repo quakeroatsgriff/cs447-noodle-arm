@@ -1,5 +1,7 @@
 ## Resolved Issues ##
 - **[0]** Init repository and workspace
+- **[1]** Skeletal game frame
 
 ## Open Issues
-- **[1]** Skeletal game frame
+- **[2]** ???
+- **[3]** Profit
