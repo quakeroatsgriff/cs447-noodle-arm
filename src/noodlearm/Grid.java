@@ -6,7 +6,7 @@ import jig.Vector;
 
 public class Grid extends Entity{
     private String entity;
-    private String type;
+    private int type;
     private int ID;
     public boolean walkable;
     public float travel_cost;
@@ -16,15 +16,18 @@ public class Grid extends Entity{
         this.travel_cost=Integer.MAX_VALUE;
     }
     //Regular grid tile in generation
-    public Grid(String texture_type, int x_pos, int y_pos, int ID){
+    public Grid(int texture_type, int x_pos, int y_pos, int ID){
         //Multiply grid's position with the initializor iterator plus a screen offset.
         super(x_pos*32+24,y_pos*32+64);
         this.entity="";
         this.ID=ID;
         this.type=texture_type;
         switch(texture_type){
-            case "WALL":
-                //addImageWithBoundingBox(ResourceManager.getImage(Pushover.WALL_RES));
+            //Wall
+            case 1:
+            //Border
+            case 2:
+                addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.WALL_RES));
                 this.walkable=false;
                 //The walkable checker makes sure you can't walk on a wall, so
                 //a cost of -1 is ok.
@@ -32,7 +35,7 @@ public class Grid extends Entity{
                 break;
             //Tile with no special properties, anything can move on it.
             default:
-                // addImageWithBoundingBox(ResourceManager.getImage(Pushover.BLANK_RES));
+                addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.BLANK_RES));
                 this.walkable=true;
                 this.travel_cost=1.0f;
                 break;
@@ -58,7 +61,7 @@ public class Grid extends Entity{
         return this.entity;
     }
     
-    public String getType(){
+    public int getType(){
         return this.type;
     }
 }

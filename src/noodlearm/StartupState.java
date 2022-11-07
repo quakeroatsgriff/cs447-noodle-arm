@@ -24,10 +24,14 @@ public class StartupState extends BasicGameState {
 
     @Override
 	public void enter(GameContainer container, StateBasedGame game) {
+    
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+        
         //TODO
+        g.drawString("press space to start", 300,400);
+
         //g.drawImage(ResourceManager.getImage(Noodlearm.STARTUP_SCREEN_RES), 0, 0);
     }
 
