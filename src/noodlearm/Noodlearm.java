@@ -17,9 +17,13 @@ public class Noodlearm extends StateBasedGame{
 
     public final int ScreenWidth;
     public final int ScreenHeight;
+
+    public ArrayList<Grid> grid;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
+    public static final String BLANK_RES = "noodlearm/res/img/blank.png";
+    public static final String WALL_RES = "noodlearm/res/img/wall.png";
 
     /*
     * Creates the Noodle Arm game frame.
@@ -29,6 +33,7 @@ public class Noodlearm extends StateBasedGame{
         ScreenHeight = height;
         ScreenWidth = width;
         Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
+        grid = new ArrayList<Grid>(50);
     }
 
     @Override
@@ -41,6 +46,8 @@ public class Noodlearm extends StateBasedGame{
         //TODO
         // ResourceManager.loadImage(STARTUP_SCREEN_RES);
         // ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
+        ResourceManager.loadImage(BLANK_RES);
+        ResourceManager.loadImage(WALL_RES);
 
     }
 
