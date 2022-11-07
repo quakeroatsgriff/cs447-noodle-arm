@@ -3,5 +3,7 @@
 - **[1]** Skeletal game frame
 
 ## Open Issues
-- **[2]** ???
-- **[3]** Profit
+- **[2]** Establish grid object and creation
+- **[3]** ???
+- **[4]** Profit
+
