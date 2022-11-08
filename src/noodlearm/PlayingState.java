@@ -40,12 +40,49 @@ public class PlayingState extends BasicGameState {
             //Grid textures
             grid_cell.render(g);
         };
+        na.player.render(g);
     }
 
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
+        checkInput(input, na);
+        na.player.update(na, delta);
+    }
+
+    private void checkInput(Input input, Noodlearm na){
+        //Player moves left
+        if(input.isKeyDown(Input.KEY_A)){
+            //If the player is still frozen from moving the boulder
+            if(na.player.getRemainingTime() <= 0){
+                na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),0);
+                return;
+            }
+        }
+        //Player moves Right
+        if(input.isKeyDown(Input.KEY_D)){
+            //Move boulder to right if it's there
+            if(na.player.getRemainingTime() <= 0){
+                na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),1);
+                return;
+            }
+        }   
+        //Player moves Down
+        if(input.isKeyDown(Input.KEY_S)){
+            if(na.player.getRemainingTime() <= 0){
+                na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),2);
+                return;
+            }
+        }
+        //Player moves Up
+        if(input.isKeyDown(Input.KEY_W)){
+            //Move boulder to right if it's there
+            if(na.player.getRemainingTime() <= 0){
+                na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),3);
+                return;
+            }
+        }
     }
 
     //TODO Use nate's way of making maps from file
@@ -70,5 +107,8 @@ public class PlayingState extends BasicGameState {
             }
         }
         sc.close();
+        //Init player location
+        na.player = new Player(na.grid.get(32));
     }
+    
 }
