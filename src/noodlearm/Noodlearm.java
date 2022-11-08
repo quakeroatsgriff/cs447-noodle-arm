@@ -19,6 +19,7 @@ public class Noodlearm extends StateBasedGame{
     public final int ScreenHeight;
 
     public ArrayList<Grid> grid;
+    public Player player;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
