@@ -1,6 +1,7 @@
 package noodlearm;
 
 import jig.ResourceManager;
+import org.lwjgl.Sys;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -10,6 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.HorizontalSplitTransition;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
@@ -30,6 +32,13 @@ public class PlayingState extends BasicGameState {
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
         initTestLevel(na);
+
+        // simple echo server demonstration
+        Scanner input = new Scanner( System.in );
+        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
+        while ( input.hasNextLine() ) {
+            na.client.send( input.nextLine() );
+        }
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
