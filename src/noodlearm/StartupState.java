@@ -30,7 +30,7 @@ public class StartupState extends BasicGameState {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         
         //TODO
-        g.drawString("press space to start", 300,400);
+        g.drawString("press space (or A on controller) to start", 100,400);
 
         //g.drawImage(ResourceManager.getImage(Noodlearm.STARTUP_SCREEN_RES), 0, 0);
     }
@@ -39,8 +39,8 @@ public class StartupState extends BasicGameState {
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
-		//Await user input to start the game
-		if (input.isKeyDown(Input.KEY_SPACE)){ 	
+		//Await user input to start the game (A press on game controller0)
+		if (input.isKeyDown(Input.KEY_SPACE) || input.isButton1Pressed(Input.ANY_CONTROLLER)){ 	
             na.enterState(Noodlearm.PLAYINGSTATE, new EmptyTransition(), new HorizontalSplitTransition());
         }
     }

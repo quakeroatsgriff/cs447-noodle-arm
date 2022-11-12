@@ -1,14 +1,13 @@
 package noodlearm;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 import jig.Entity;
 import jig.ResourceManager;
-
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+
+import java.util.ArrayList;
 
 public class Noodlearm extends StateBasedGame{
     public static final int STARTUPSTATE = 0;
@@ -18,6 +17,8 @@ public class Noodlearm extends StateBasedGame{
     public final int ScreenWidth;
     public final int ScreenHeight;
 
+    Client client;
+    Server server;
     public ArrayList<Grid> grid;
     public Player player;
     //Resource strings
@@ -35,6 +36,16 @@ public class Noodlearm extends StateBasedGame{
         ScreenWidth = width;
         Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
         grid = new ArrayList<Grid>(50);
+
+        // below is for networking testing
+
+        // create and start server thread
+        server = new Server();
+        server.start();
+
+        // create and start client thread
+        client = new Client();
+        client.start();
     }
 
     @Override
