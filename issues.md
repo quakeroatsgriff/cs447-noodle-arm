@@ -5,7 +5,7 @@
 - **[3]** Establish player entity
 
 ## Open Issues
-- **[4]** Set up dumb client networking model. Server handles update method. Clients handle render method.
+- **[4]** Set up dumb client networking model. Server handles update method. Clients handle render method. Use objectoutputstream
 - **[5]** ???
 - **[6]** Profit
 
