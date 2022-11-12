@@ -1,6 +1,7 @@
 package noodlearm;
 
 import jig.ResourceManager;
+import org.lwjgl.Sys;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -10,6 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.HorizontalSplitTransition;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
@@ -30,6 +32,13 @@ public class PlayingState extends BasicGameState {
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
         initTestLevel(na);
+
+        // simple echo server demonstration
+        Scanner input = new Scanner( System.in );
+        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
+        while ( input.hasNextLine() ) {
+            na.client.send( input.nextLine() );
+        }
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -52,8 +61,11 @@ public class PlayingState extends BasicGameState {
     }
 
     private void checkInput(Input input, Noodlearm na){
+        //Get game controller object
+        // Controller controller = Controller.getController(0);
+
         //Player moves left
-        if(input.isKeyDown(Input.KEY_A)){
+        if(input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
             //If the player is still frozen from moving the boulder
             if(na.player.getRemainingTime() <= 0){
                 na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),0);
@@ -61,27 +73,42 @@ public class PlayingState extends BasicGameState {
             }
         }
         //Player moves Right
-        if(input.isKeyDown(Input.KEY_D)){
+        if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
                 na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),1);
                 return;
             }
-        }   
+        }
         //Player moves Down
-        if(input.isKeyDown(Input.KEY_S)){
+        if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
                 na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),2);
                 return;
             }
         }
         //Player moves Up
-        if(input.isKeyDown(Input.KEY_W)){
+        if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
                 na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),3);
                 return;
             }
+        }
+        //TODO
+        //Player uses light attack (X on controller)
+        if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
+            return;
+        }
+        //TODO
+        //Player uses heavy attack (Y on controller)
+        if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
+            return;
+        }
+        //TODO
+        //Player switches weapons (B on controller)
+        if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
+            return;
         }
     }
 
