@@ -1,4 +1,6 @@
 package noodlearm;
+
+import java.util.ArrayList;
 import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
@@ -10,6 +12,10 @@ public class Player extends Entity {
     private String direction;
     private boolean walking;
     private Vector velocity;
+    private Weapon weapon;
+    private int held_weapon_ID;
+    private int weapon_count;
+    public ArrayList<Weapon> weapon_inv;
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
@@ -17,11 +23,17 @@ public class Player extends Entity {
         this.movement_timer=0;
         this.walking=false;
         this.grid_ID=grid_point.getID();
+        this.held_weapon_ID=0;
+        this.weapon_count = -1;
+        this.setScale((float) 0.125);
+        //Can hold 3 weapons
+        this.weapon_inv=new ArrayList<Weapon>(3);
+
         //this.direction=Pushover.PLAYER_F_RES;
         this.velocity=new Vector(0,0);
         grid_point.setEntity("Player");
         // addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.PLAYER_F_RES));
-        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.WALL_RES));
+        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
 
     }
     
@@ -78,6 +90,25 @@ public class Player extends Entity {
         return true;
     }
 
+    public void pickupWeapon(WeaponSprite ws){
+        this.weapon_inv.add(ws.weapon);
+        this.weapon_count+=1;
+    }
+    /**
+     * Cycle to next weapon ID in inventory, or roll back to 1st ID (0) if 
+     * at last weapon ID
+     */
+    public void changeWeapon(){
+        this.held_weapon_ID = held_weapon_ID > this.weapon_count ? 0 : held_weapon_ID+1;
+        this.weapon=this.weapon_inv.get(held_weapon_ID);
+        this.changeSprite();
+    }
+    /**
+     * Changes sprite based on player's held weapon
+     */
+    private void changeSprite(){
+
+    }
     /**
      * @return movement timer
      */
