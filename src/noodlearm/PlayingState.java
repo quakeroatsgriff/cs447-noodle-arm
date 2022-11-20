@@ -36,9 +36,10 @@ public class PlayingState extends BasicGameState {
         // simple echo server demonstration
         Scanner input = new Scanner( System.in );
         System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
-        while ( input.hasNextLine() ) {
-            na.client.send( input.nextLine() );
-        }
+        //TODO
+        // while ( input.hasNextLine() ) {
+        //     na.client.send( input.nextLine() );
+        // }
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -136,6 +137,7 @@ public class PlayingState extends BasicGameState {
         sc.close();
         //Init player location
         na.player = new Player(na.grid.get(32));
+        na.player.pickupWeapon(new WeaponSprite(na.grid.get(32), "SWORD"));
     }
     
 }

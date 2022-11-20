@@ -26,6 +26,10 @@ public class Noodlearm extends StateBasedGame{
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
     public static final String BLANK_RES = "noodlearm/res/img/blank.png";
     public static final String WALL_RES = "noodlearm/res/img/wall.png";
+    public static final String SWORD_RES = "noodlearm/res/img/sword.png";
+    public static final String SPEAR_RES = "noodlearm/res/img/club.png";
+    public static final String CLUB_RES = "noodlearm/res/img/spear.png";
+    public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/knight.png";
 
     /*
     * Creates the Noodle Arm game frame.
@@ -60,6 +64,10 @@ public class Noodlearm extends StateBasedGame{
         // ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
         ResourceManager.loadImage(BLANK_RES);
         ResourceManager.loadImage(WALL_RES);
+        ResourceManager.loadImage(SWORD_RES);
+        ResourceManager.loadImage(SPEAR_RES);
+        ResourceManager.loadImage(CLUB_RES);
+        ResourceManager.loadImage(KNIGHT_FORWARD_RES);
 
     }
 
