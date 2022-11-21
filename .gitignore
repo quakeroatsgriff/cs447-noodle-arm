@@ -27,3 +27,5 @@ bin/
 doc/
 .idea/
 noodle-arm.iml
+out/
+cs447-project-2.iml

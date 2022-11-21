@@ -49,8 +49,11 @@ public class Server extends Thread {
 
     public void send_map( String map ) {
 
+        // create a new scanner to run on input string
         Scanner sc = new Scanner( map );
+        // split it by space and newline
         sc.useDelimiter( " \n" );
+        // we send MAP_START and MAP_END as keywords for parsing map data
         this.output_stream.println( "MAP_START\n" + sc.next() + "\nMAP_END" );
         this.output_stream.flush();
         sc.close();

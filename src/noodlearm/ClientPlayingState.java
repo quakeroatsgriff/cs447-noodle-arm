@@ -28,26 +28,26 @@ public class ClientPlayingState extends PlayingState {
         // create and start client thread
         na.client = new Client();
         na.client.start();
-        initTestLevel(na);
 
-    }
-    @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        Noodlearm na = (Noodlearm)game;
-        for(Grid grid_cell : na.grid)  {
-            //Debug draw grid tile numbers
-            // g.drawString(""+grid_cell.getID(), grid_cell.getX()-16, grid_cell.getY()-16);
-            //Grid textures
-            grid_cell.render(g);
+        // here we check if the server sent us a map,
+        // if they haven't we sleep for one second and check again
+        while ( na.client.current_map.equals( "" ) ) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
-        na.player.render(g);
+
+        initTestLevel( na);
+
     }
 
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
+
         //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
         for(WeaponSprite ws : na.weapons_on_ground)    {
             if((ws.grid_ID == na.player.grid_ID && !ws.attacking)){
@@ -136,13 +136,9 @@ public class ClientPlayingState extends PlayingState {
         int ID_counter = 0, x = 0, y = 0;
 
         // open a new scanner
-        try {
-            sc = new Scanner( new File( "src/noodlearm/res/grids/level_one.txt" ) );
-            // split file by line
-            sc.useDelimiter( "\n" );
-        } catch( Exception CannotOpenFile ) {
-            CannotOpenFile.printStackTrace();
-        }
+        sc = new Scanner( na.client.current_map );
+        // split string by line
+        sc.useDelimiter( "\n" );
 
         // for each line in file
         while ( sc.hasNext() ) {
