@@ -2,6 +2,8 @@ package noodlearm;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -19,19 +21,46 @@ public class Client extends Thread {
     // input_stream for recieving information from server
     Scanner input_stream;
 
-    public Client() {}
+    public Client() {
+        boolean scanning = true;
+        while ( scanning ) {
+            try {
+                this.socket = new Socket();
+                this.socket.connect( new InetSocketAddress( "localhost", 1234 ) );
+                scanning=false;
+            } catch(ConnectException e) {
+                System.out.println("Connect failed, waiting and trying again");
+                try {
+                    Thread.sleep(2000);//2 seconds
+                } catch(InterruptedException ie){
+                    ie.printStackTrace();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-    // gets called when start() is invoked
-    public void run() {
 
-        // create connection socket, then create I/O objects from that
+        while ( true ) {
+            // create connection socket, then create I/O objects from that
+            try {
+                this.socket = new Socket("localhost", 1234);
+                break;
+            } catch (ConnectException | RuntimeException ignored) {
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         try {
-            this.socket = new Socket( "localhost", 1234 );
-            this.output_stream = new PrintWriter( socket.getOutputStream() );
-            this.input_stream = new Scanner( socket.getInputStream() );
+            this.output_stream = new PrintWriter(socket.getOutputStream());
+            this.input_stream = new Scanner(socket.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // gets called when start() is invoked
+    public void run() {
 
         // accept input from the server until our socket closes
         try {

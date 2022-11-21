@@ -24,16 +24,12 @@ public class ClientPlayingState extends PlayingState {
     @Override
     public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
+
+        // create and start client thread
+        na.client = new Client();
+        na.client.start();
         initTestLevel(na);
 
-        // simple echo server demonstration
-
-//        Scanner input = new Scanner( System.in );
-//        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
-        //TODO
-        // while ( input.hasNextLine() ) {
-        //     na.client.send( input.nextLine() );
-        // }
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {

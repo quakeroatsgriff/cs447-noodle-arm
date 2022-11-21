@@ -31,13 +31,28 @@ public class PlayingState extends BasicGameState {
     @Override
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
-        initTestLevel(na);
+        // create and start server thread
+        na.server = new Server();
+        na.server.start();
+
+        initTestLevel( na );
+        na.server.send_map( "1 1 1 1 1 1 1 1 1 1 1 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 2 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
+                "1 1 1 1 1 1 1 1 1 1 1 1" );
 
         // simple echo server demonstration
 
-//        Scanner input = new Scanner( System.in );
-//        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
-        //TODO
+        // Scanner input = new Scanner( System.in );
+        // System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
         // while ( input.hasNextLine() ) {
         //     na.client.send( input.nextLine() );
         // }

@@ -50,16 +50,6 @@ public class Noodlearm extends StateBasedGame{
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
         weapons_on_ground =new ArrayList<WeaponSprite>(1);
-
-        // below is for networking testing
-
-        // create and start server thread
-        server = new Server();
-        server.start();
-
-        // create and start client thread
-        client = new Client();
-        client.start();
     }
 
     @Override
