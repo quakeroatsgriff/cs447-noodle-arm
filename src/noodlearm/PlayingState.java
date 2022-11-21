@@ -50,6 +50,7 @@ public class PlayingState extends BasicGameState {
             //Grid textures
             grid_cell.render(g);
         };
+        for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
         na.player.render(g);
     }
 
@@ -57,8 +58,25 @@ public class PlayingState extends BasicGameState {
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
-        checkInput(input, na);
+        //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
+        for(WeaponSprite ws : na.weapons_on_ground)    {
+            if((ws.grid_ID == na.player.grid_ID && !ws.attacking)){
+                na.player.pickupWeapon(ws);
+                //Remove weapon sprite from world
+                na.weapons_on_ground.remove(ws);
+                break;
+            }
+            if(ws.attacking){
+                ws.update(na, delta);
+                //If an attacking weapon's timer has reached 0, remove the weapon from the world
+                if(ws.attacking_timer <=0){
+                    na.weapons_on_ground.remove(ws);
+                    break;
+                }
+            }
+        }
         na.player.update(na, delta);
+        checkInput(input, na);
     }
 
     private void checkInput(Input input, Noodlearm na){
@@ -99,16 +117,23 @@ public class PlayingState extends BasicGameState {
         //TODO
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
-            return;
+            if(na.player.getRemainingTime() <= 0){
+                na.player.lightAttack(na);
+                return; 
+            }
         }
         //TODO
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
-            return;
+            if(na.player.getRemainingTime() <= 0){
+                na.player.lightAttack(na);
+                return; 
+            };
         }
-        //TODO
+        //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
+            na.player.changeWeapon();
             return;
         }
     }
@@ -137,7 +162,9 @@ public class PlayingState extends BasicGameState {
         sc.close();
         //Init player location
         na.player = new Player(na.grid.get(32));
-        na.player.pickupWeapon(new WeaponSprite(na.grid.get(32), "SWORD"));
+        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(33), "SWORD"));
+        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(45), "CLUB"));
+        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(57), "SPEAR"));
     }
     
 }
