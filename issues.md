@@ -8,9 +8,12 @@
 - **[6]** Set up game controller input
 
 - **[6]** Set up game controller input
+- **[7]** Set up weapons class and characteristics
+- **[8]** Set up players picking up weapons, store in inventory, and light attack. 
 
 ## Open Issues
-- **[7]** Set up dumb client networking model. Server handles update method. Clients handle render method.
-- **[8]** ???
-- **[9]** Profit
+
+
+
+- **[?]** Set up dumb client networking model. Server handles update method. Clients handle render method.
 

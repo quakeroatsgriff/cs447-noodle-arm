@@ -17,15 +17,26 @@ public class Noodlearm extends StateBasedGame{
     public final int ScreenWidth;
     public final int ScreenHeight;
 
+    public static final int LEFT = 0;
+    public static final int RIGHT = 1;
+    public static final int DOWN = 2;
+    public static final int UP = 3;    
+
     Client client;
     Server server;
     public ArrayList<Grid> grid;
+    public ArrayList<WeaponSprite> weapons_on_ground;
     public Player player;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
     public static final String BLANK_RES = "noodlearm/res/img/blank.png";
     public static final String WALL_RES = "noodlearm/res/img/wall.png";
+    public static final String SWORD_RES = "noodlearm/res/img/sword.png";
+    public static final String CLUB_RES = "noodlearm/res/img/club.png";
+    public static final String SPEAR_RES = "noodlearm/res/img/spear.png";
+    public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/knight.png";
+
 
     /*
     * Creates the Noodle Arm game frame.
@@ -34,8 +45,10 @@ public class Noodlearm extends StateBasedGame{
         super(title);
         ScreenHeight = height;
         ScreenWidth = width;
-        Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);
+        //Circle bounding boxes so entities can be rotated. Because AABB doesn't allow that...
+        Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
+        weapons_on_ground =new ArrayList<WeaponSprite>(1);
 
         // below is for networking testing
 
@@ -60,6 +73,10 @@ public class Noodlearm extends StateBasedGame{
         // ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
         ResourceManager.loadImage(BLANK_RES);
         ResourceManager.loadImage(WALL_RES);
+        ResourceManager.loadImage(SWORD_RES);
+        ResourceManager.loadImage(SPEAR_RES);
+        ResourceManager.loadImage(CLUB_RES);
+        ResourceManager.loadImage(KNIGHT_FORWARD_RES);
 
     }
 
