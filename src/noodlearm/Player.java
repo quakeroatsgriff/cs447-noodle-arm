@@ -7,23 +7,27 @@ import jig.Vector;
 public class Player extends Entity {
     public int lives_left;
     public int grid_ID;
-    private int movement_timer;
+    private int action_timer;   //for movement and attacking
     private int sprite_update_timer;
-    private String direction;
+    private int direction; //0 1 2 3 = left, right, forward (down), back (up)
     private boolean walking;
+    private boolean attacking;
     private Vector velocity;
     private Weapon weapon;
     private int held_weapon_ID;
     private int weapon_count;
+    private int weapon_switch_timer;
     public ArrayList<Weapon> weapon_inv;
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
         this.lives_left=3;
-        this.movement_timer=0;
+        this.action_timer=0;
+        this.weapon_switch_timer=0;
         this.walking=false;
+        this.attacking=false;
         this.grid_ID=grid_point.getID();
-        this.held_weapon_ID=0;
+        this.held_weapon_ID=-1;
         this.weapon_count = -1;
         this.setScale((float) 0.125);
         //Can hold 3 weapons
@@ -38,9 +42,10 @@ public class Player extends Entity {
     }
     
     public void update(Noodlearm na, int delta){
-        movement_timer-=delta;
+        action_timer-=delta;
         sprite_update_timer-=delta;
-        if(movement_timer > 0)  {
+        weapon_switch_timer-=delta;
+        if(action_timer > 0)  {
             // updateSpriteWalking();
             translate(this.velocity.scale(delta));
         }
@@ -51,17 +56,26 @@ public class Player extends Entity {
             this.setX(na.grid.get(this.grid_ID).getX());
             this.setY(na.grid.get(this.grid_ID).getY());
             this.velocity = new Vector(0.0f,0.0f);
+            //If the player was attacking for their action
+            if(this.attacking){
+                clearAllSprites();
+                addImageWithBoundingBox(ResourceManager.getImage(this.weapon.texture));
+                //Load weapon before loading player sprite
+                addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
+                this.attacking=false;
+            }
         }
     }
     
 
     public boolean move(Grid grid_point_new, Grid grid_point_old, int direction){
         float dir_x=1.0f,dir_y=1.0f;
+        this.direction=direction;
         //Update player sprite direction
         // changePlayerDirection(direction);
         switch(direction){
             //Left
-            case 0:
+            case Noodlearm.LEFT:
                 dir_x=-1.0f; dir_y=0.f;
                 break;
             //Right
@@ -79,40 +93,79 @@ public class Player extends Entity {
         }
         //If the grid point cannot be moved onto
         if(!grid_point_new.walkable)    return false;
-        if(this.movement_timer > 0)     return false;
+        if(this.action_timer > 0)     return false;
         grid_point_old.setEntity("");
         grid_point_new.setEntity("Player");
         this.grid_ID = grid_point_new.getID();
         //Gets the direction from the old to the new grid 'point'
-        this.velocity = new Vector(dir_x * (float)(32.0f / 200.0f), dir_y * (float)(32.0f / 200.0f));
+        this.velocity = new Vector(dir_x * (float)(64.0f / 200.0f), dir_y * (float)(64.0f / 200.0f));
         //Set movement timer to 200 ms
-        this.movement_timer=200;
+        this.action_timer=200;
         return true;
     }
 
     public void pickupWeapon(WeaponSprite ws){
         this.weapon_inv.add(ws.weapon);
         this.weapon_count+=1;
+        //If the weapon is the first one the player picked up
+        if(this.held_weapon_ID == -1)   changeWeapon();
     }
     /**
      * Cycle to next weapon ID in inventory, or roll back to 1st ID (0) if 
      * at last weapon ID
      */
     public void changeWeapon(){
-        this.held_weapon_ID = held_weapon_ID > this.weapon_count ? 0 : held_weapon_ID+1;
-        this.weapon=this.weapon_inv.get(held_weapon_ID);
-        this.changeSprite();
+        //Don't change weapon if attacking or has switched recently
+        if(this.weapon_switch_timer <= 0 && !this.attacking){
+            this.held_weapon_ID = held_weapon_ID >= this.weapon_count ? 0 : held_weapon_ID+1;
+            this.weapon=this.weapon_inv.get(held_weapon_ID);
+            this.changeSprite();
+            this.weapon_switch_timer=250;
+        }
+        return;
     }
+
+    /**
+     * Do light attack with current held weapon
+     * @returns True if succesful attack, false if not successful
+     */
+    public boolean lightAttack(Noodlearm na){
+        //Base case, player has no weapon
+        if(this.weapon_count==-1)   return false;
+        this.attacking=true;
+        this.action_timer=this.weapon.speed;
+        removeImage(ResourceManager.getImage(this.weapon.texture));
+        //Add attacking weapon into world
+        na.weapons_on_ground.add(new WeaponSprite(this, this.direction, weapon));
+        return true;
+    }
+
     /**
      * Changes sprite based on player's held weapon
      */
     private void changeSprite(){
+        this.clearAllSprites();
+        addImageWithBoundingBox(ResourceManager.getImage(this.weapon.texture));
+        //Load weapon before loading player sprite
+        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
 
     }
+
+    /**
+     * I know this is janky, but it was the only way I could think of to ensure the proper
+     * sprite is being removed no matter the scenerio the player is in.
+     */
+    private void clearAllSprites(){
+        removeImage(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
+        removeImage(ResourceManager.getImage(Noodlearm.SWORD_RES));
+        removeImage(ResourceManager.getImage(Noodlearm.SPEAR_RES));
+        removeImage(ResourceManager.getImage(Noodlearm.CLUB_RES));
+    }
+
     /**
      * @return movement timer
      */
     public int getRemainingTime(){
-        return movement_timer;
+        return action_timer;
     }
 }
