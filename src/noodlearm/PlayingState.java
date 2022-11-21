@@ -34,11 +34,11 @@ public class PlayingState extends BasicGameState {
         initTestLevel(na);
 
         // simple echo server demonstration
-        Scanner input = new Scanner( System.in );
-        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
-        while ( input.hasNextLine() ) {
-            na.client.send( input.nextLine() );
-        }
+//        Scanner input = new Scanner( System.in );
+//        System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
+//        while ( input.hasNextLine() ) {
+//            na.client.send( input.nextLine() );
+//        }
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -48,7 +48,7 @@ public class PlayingState extends BasicGameState {
             // g.drawString(""+grid_cell.getID(), grid_cell.getX()-16, grid_cell.getY()-16);
             //Grid textures
             grid_cell.render(g);
-        };
+        }
         na.player.render(g);
     }
 
@@ -68,7 +68,7 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
             //If the player is still frozen from moving the boulder
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),0);
+                na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),0);
                 return;
             }
         }
@@ -76,14 +76,14 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),1);
+                na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),1);
                 return;
             }
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),2);
+                na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),2);
                 return;
             }
         }
@@ -91,7 +91,7 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),3);
+                na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),3);
                 return;
             }
         }
@@ -112,30 +112,43 @@ public class PlayingState extends BasicGameState {
         }
     }
 
-    //TODO Use nate's way of making maps from file
     private void initTestLevel(Noodlearm na){
-        //Reset level by removing old grid
+        // Reset level by removing old grid
         na.grid.clear();
-        Scanner sc=null;
-        int ID_counter=0;
-        try{
-            sc = new Scanner(new File("src/noodlearm/res/grids/test-grid.txt"));
-        } catch(Exception CannotOpenFile) {
+        // initialize variables
+        Scanner sc = null;
+        int ID_counter = 0, x = 0, y = 0;
+
+        // open a new scanner
+        try {
+            sc = new Scanner( new File( "src/noodlearm/res/grids/level_one.txt" ) );
+            // split file by line
+            sc.useDelimiter( "\n" );
+        } catch( Exception CannotOpenFile ) {
             CannotOpenFile.printStackTrace();
         }
-        for(int x=0; x<12; x++){
-            for(int y=0; y<12; y++){
-                try{
-                    if(sc.hasNext()){
-                        //Insert grid object into array list
-                        na.grid.add(new Grid(Integer.parseInt(sc.next()),x,y,ID_counter++));
-                    }
-                }catch(NullPointerException e){ e.printStackTrace();}
+
+        // for each line in file
+        while ( sc.hasNext() ) {
+            // for each char in line
+            for ( String b : sc.next().split( " " ) ) {
+                // parse int from string
+                int tile_type = Integer.parseInt( b );
+                // we can encode specialty tiles here
+                switch ( tile_type ) {
+                    // a two means a player, so we add floor tile then player
+                    case 2:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.player = new Player( na.grid.get( ID_counter++ ) );
+                        break;
+                    // regular tile
+                    default:
+                        na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
+                }
             }
+            // reset column and increase row
+            x = 0; y++;
         }
-        sc.close();
-        //Init player location
-        na.player = new Player(na.grid.get(32));
     }
     
 }
