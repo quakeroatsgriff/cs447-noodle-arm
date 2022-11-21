@@ -100,10 +100,14 @@ public class PlayingState extends BasicGameState {
         // Controller controller = Controller.getController(0);
 
         //Player moves left
-        if(input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
+        if (input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
             //If the player is still frozen from moving the boulder
-            if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),0);
+            if (na.player.getRemainingTime() <= 0){
+                Grid new_location = na.grid.get(na.player.grid_ID - 1);
+                Grid old_location = na.grid.get(na.player.grid_ID);
+                if (na.player.move(new_location, old_location, 0)) {
+                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                }
                 return;
             }
         }
@@ -111,14 +115,22 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),1);
+                Grid new_location = na.grid.get(na.player.grid_ID + 1);
+                Grid old_location = na.grid.get(na.player.grid_ID);
+                if (na.player.move(new_location, old_location, 1)) {
+                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                }
                 return;
             }
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),2);
+                Grid new_location = na.grid.get(na.player.grid_ID + 12);
+                Grid old_location = na.grid.get(na.player.grid_ID);
+                if (na.player.move(new_location, old_location, 2)) {
+                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                }
                 return;
             }
         }
@@ -126,7 +138,11 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),3);
+                Grid new_location = na.grid.get(na.player.grid_ID - 12);
+                Grid old_location = na.grid.get(na.player.grid_ID);
+                if (na.player.move(new_location, old_location, 3)) {
+                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                }
                 return;
             }
         }

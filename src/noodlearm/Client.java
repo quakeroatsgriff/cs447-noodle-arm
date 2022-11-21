@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class Client extends Thread {
 
     public String current_map = "";
+    public Integer current_player_location = -1;
 
     // socket for communicating to server
     Socket socket;
@@ -85,6 +86,13 @@ public class Client extends Thread {
 
                         // store the map that was sent
                         current_map = map.toString();
+                        break;
+
+                    case "PLAYER_LOC_START":
+                        // we get new player location from the server
+                        current_player_location = Integer.parseInt(this.input_stream.nextLine());
+                        // we get rid of next line (should be PLAYER_LOC_END)
+                        this.input_stream.nextLine();
                         break;
 
                     default:

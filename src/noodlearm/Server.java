@@ -59,6 +59,11 @@ public class Server extends Thread {
         sc.close();
     }
 
+    public void send_player_location( String location ) {
+        this.output_stream.println( "PLAYER_LOC_START\n" + location + "\nPLAYER_LOC_END" );
+        this.output_stream.flush();
+    }
+
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();

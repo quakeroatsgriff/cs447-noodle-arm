@@ -66,7 +66,9 @@ public class ClientPlayingState extends PlayingState {
             }
         }
         na.player.update(na, delta);
-        checkInput(input, na);
+        if ( na.client.current_player_location != na.player.grid_ID & na.client.current_player_location != -1 ) {
+            na.player.move(na.grid.get(na.client.current_player_location), na.grid.get(na.player.grid_ID), 0);
+        }
     }
 
     private void checkInput(Input input, Noodlearm na){
