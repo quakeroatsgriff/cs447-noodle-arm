@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class Noodlearm extends StateBasedGame{
     public static final int STARTUPSTATE = 0;
     public static final int PLAYINGSTATE  = 1;
-    public static final int GAMEOVERSTATE  = 2;
+    public static final int CLIENTPLAYINGSTATE  = 2;
+    public static final int GAMEOVERSTATE  = 3;
 
     public final int ScreenWidth;
     public final int ScreenHeight;
@@ -49,22 +50,13 @@ public class Noodlearm extends StateBasedGame{
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
         weapons_on_ground =new ArrayList<WeaponSprite>(1);
-
-        // below is for networking testing
-
-        // create and start server thread
-        server = new Server();
-        server.start();
-
-        // create and start client thread
-        client = new Client();
-        client.start();
     }
 
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new StartupState());
         addState(new PlayingState());
+        addState(new ClientPlayingState());
         addState(new GameoverState());
 
         //Preload resources here

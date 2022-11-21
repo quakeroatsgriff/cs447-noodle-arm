@@ -20,11 +20,7 @@ public class Server extends Thread {
     Scanner input_stream;
     // stream for output to client
     PrintWriter output_stream;
-    public Server() {}
-
-    // gets called when start() is invoked
-    public void run() {
-
+    public Server() {
         // setup server_socket, socket, and I/O streams
         try {
             this.server_socket = new ServerSocket( 1234 );
@@ -34,21 +30,38 @@ public class Server extends Thread {
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    // gets called when start() is invoked
+    public void run() {
 
         // loop while we're still receiving information from the client
-        try {
-            // right now we're just echoing back to the client
-            while ( input_stream.hasNextLine() ) {
-                output_stream.println( input_stream.nextLine() );
-                output_stream.flush();
-            }
-        } catch ( IllegalStateException e ) { // called when socket closes
-            return;
+        // right now we're just echoing back to the client
+        while ( input_stream.hasNextLine() ) {
+            output_stream.println( input_stream.nextLine() );
+            output_stream.flush();
         }
 
         // clean up and print debug message
         System.out.println( "Server Quitting" );
         this.kill_thread();
+    }
+
+    public void send_map( String map ) {
+
+        // create a new scanner to run on input string
+        Scanner sc = new Scanner( map );
+        // split it by space and newline
+        sc.useDelimiter( " \n" );
+        // we send MAP_START and MAP_END as keywords for parsing map data
+        this.output_stream.println( "MAP_START\n" + sc.next() + "\nMAP_END" );
+        this.output_stream.flush();
+        sc.close();
+    }
+
+    public void send_player_location( String location ) {
+        this.output_stream.println( "PLAYER_LOC_START\n" + location + "\nPLAYER_LOC_END" );
+        this.output_stream.flush();
     }
 
     // to be called when we want to kill this thread and stop networking

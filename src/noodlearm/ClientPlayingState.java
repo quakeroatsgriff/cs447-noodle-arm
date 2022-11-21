@@ -1,26 +1,19 @@
 package noodlearm;
 
-import jig.ResourceManager;
-import org.lwjgl.Sys;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.EmptyTransition;
-import org.newdawn.slick.state.transition.HorizontalSplitTransition;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Stack;
-import jig.Vector;
 
-public class PlayingState extends BasicGameState {
+import java.io.File;
+import java.util.Scanner;
+
+public class ClientPlayingState extends PlayingState {
     @Override
     public int getID() {
-        return Noodlearm.PLAYINGSTATE;
+        return Noodlearm.CLIENTPLAYINGSTATE;
     }
 
     @Override
@@ -29,51 +22,32 @@ public class PlayingState extends BasicGameState {
     }
 
     @Override
-	public void enter(GameContainer container, StateBasedGame game) {
+    public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
-        // create and start server thread
-        na.server = new Server();
-        na.server.start();
 
-        initTestLevel( na );
-        na.server.send_map( "1 1 1 1 1 1 1 1 1 1 1 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 2 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 1 1 1 1 1 1 1 1 1 1 1" );
+        // create and start client thread
+        na.client = new Client();
+        na.client.start();
 
-        // simple echo server demonstration
-
-        // Scanner input = new Scanner( System.in );
-        // System.out.println( "\nEnter your message, Ctrl+D to stop correspondence.");
-        // while ( input.hasNextLine() ) {
-        //     na.client.send( input.nextLine() );
-        // }
-    }
-    @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        Noodlearm na = (Noodlearm)game;
-        for(Grid grid_cell : na.grid)  {
-            //Debug draw grid tile numbers
-            // g.drawString(""+grid_cell.getID(), grid_cell.getX()-16, grid_cell.getY()-16);
-            //Grid textures
-            grid_cell.render(g);
+        // here we check if the server sent us a map,
+        // if they haven't we sleep for one second and check again
+        while ( na.client.current_map.equals( "" ) ) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
-        na.player.render(g);
+
+        initTestLevel( na);
+
     }
 
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
+
         //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
         for(WeaponSprite ws : na.weapons_on_ground)    {
             if((ws.grid_ID == na.player.grid_ID && !ws.attacking)){
@@ -92,7 +66,9 @@ public class PlayingState extends BasicGameState {
             }
         }
         na.player.update(na, delta);
-        checkInput(input, na);
+        if ( na.client.current_player_location != na.player.grid_ID & na.client.current_player_location != -1 ) {
+            na.player.move(na.grid.get(na.client.current_player_location), na.grid.get(na.player.grid_ID), 0);
+        }
     }
 
     private void checkInput(Input input, Noodlearm na){
@@ -100,14 +76,10 @@ public class PlayingState extends BasicGameState {
         // Controller controller = Controller.getController(0);
 
         //Player moves left
-        if (input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
+        if(input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
             //If the player is still frozen from moving the boulder
-            if (na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID - 1);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 0)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
-                }
+            if(na.player.getRemainingTime() <= 0){
+                na.player.move((na.grid.get(na.player.grid_ID-1)),na.grid.get(na.player.grid_ID),0);
                 return;
             }
         }
@@ -115,22 +87,14 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID + 1);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 1)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
-                }
+                na.player.move((na.grid.get(na.player.grid_ID+1)),na.grid.get(na.player.grid_ID),1);
                 return;
             }
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID + 12);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 2)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
-                }
+                na.player.move((na.grid.get(na.player.grid_ID+12)),na.grid.get(na.player.grid_ID),2);
                 return;
             }
         }
@@ -138,11 +102,7 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID - 12);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 3)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
-                }
+                na.player.move((na.grid.get(na.player.grid_ID-12)),na.grid.get(na.player.grid_ID),3);
                 return;
             }
         }
@@ -151,7 +111,7 @@ public class PlayingState extends BasicGameState {
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
                 na.player.lightAttack(na);
-                return; 
+                return;
             }
         }
         //TODO
@@ -159,7 +119,7 @@ public class PlayingState extends BasicGameState {
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
             if(na.player.getRemainingTime() <= 0){
                 na.player.lightAttack(na);
-                return; 
+                return;
             };
         }
         //TODOs
@@ -178,13 +138,9 @@ public class PlayingState extends BasicGameState {
         int ID_counter = 0, x = 0, y = 0;
 
         // open a new scanner
-        try {
-            sc = new Scanner( new File( "src/noodlearm/res/grids/level_one.txt" ) );
-            // split file by line
-            sc.useDelimiter( "\n" );
-        } catch( Exception CannotOpenFile ) {
-            CannotOpenFile.printStackTrace();
-        }
+        sc = new Scanner( na.client.current_map );
+        // split string by line
+        sc.useDelimiter( "\n" );
 
         // for each line in file
         while ( sc.hasNext() ) {
@@ -213,5 +169,5 @@ public class PlayingState extends BasicGameState {
         na.weapons_on_ground.add(new WeaponSprite(na.grid.get(45), "CLUB"));
         na.weapons_on_ground.add(new WeaponSprite(na.grid.get(57), "SPEAR"));
     }
-    
+
 }

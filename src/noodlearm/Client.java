@@ -2,6 +2,8 @@ package noodlearm;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -12,6 +14,9 @@ import java.util.Scanner;
 * */
 public class Client extends Thread {
 
+    public String current_map = "";
+    public Integer current_player_location = -1;
+
     // socket for communicating to server
     Socket socket;
     // output_stream for sending information to server
@@ -19,24 +24,80 @@ public class Client extends Thread {
     // input_stream for recieving information from server
     Scanner input_stream;
 
-    public Client() {}
+    public Client() {
+
+        // here we loop while we're attempting to connect to a server
+        boolean scanning = true;
+        while ( scanning ) {
+
+            // we attempt connection
+            try {
+                this.socket = new Socket();
+                this.socket.connect( new InetSocketAddress( "localhost", 1234 ) );
+                scanning=false;
+            // if we fail due to ConnectException,
+            // we wait two seconds and try again
+            } catch(ConnectException e) {
+                System.out.println("Connect failed, waiting and trying again");
+                try {
+                    Thread.sleep(2000);//2 seconds
+                } catch(InterruptedException ie){
+                    ie.printStackTrace();
+                }
+            // if we fail due to an IOException,
+            // we crash
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // now that we have a connection we open I/O streams with server
+        try {
+            this.output_stream = new PrintWriter(socket.getOutputStream());
+            this.input_stream = new Scanner(socket.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // gets called when start() is invoked
     public void run() {
 
-        // create connection socket, then create I/O objects from that
-        try {
-            this.socket = new Socket( "localhost", 1234 );
-            this.output_stream = new PrintWriter( socket.getOutputStream() );
-            this.input_stream = new Scanner( socket.getInputStream() );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         // accept input from the server until our socket closes
         try {
             while ( this.input_stream.hasNextLine() ) {
-                System.out.println( "Response: " + this.input_stream.nextLine() );
+
+                // we store next line
+                String next_line = this.input_stream.nextLine();
+
+                // switch statement for matching different networking keywords
+                switch ( next_line ) {
+
+                    // we were sent a map from the server
+                    case "MAP_START":
+
+                        // we build a string from incoming map data
+                        StringBuilder map = new StringBuilder();
+                        next_line = this.input_stream.nextLine();
+                        while ( !next_line.equals( "MAP_END" ) ) {
+                            map.append( next_line + "\n" );
+                            next_line = this.input_stream.nextLine();
+                        }
+
+                        // store the map that was sent
+                        current_map = map.toString();
+                        break;
+
+                    case "PLAYER_LOC_START":
+                        // we get new player location from the server
+                        current_player_location = Integer.parseInt(this.input_stream.nextLine());
+                        // we get rid of next line (should be PLAYER_LOC_END)
+                        this.input_stream.nextLine();
+                        break;
+
+                    default:
+                        System.out.println( "From Server: " + this.input_stream.nextLine() );
+                }
             }
         } catch ( IllegalStateException e ) { // occurs when kill_thread is called
             return;
