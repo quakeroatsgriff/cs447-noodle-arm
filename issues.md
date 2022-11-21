@@ -7,9 +7,9 @@
 - **[5]** Set up building map from file, but with rows and columns
 - **[6]** Set up game controller input
 - **[7]** Set up weapons class and characteristics
-- **[8]** Set up players picking up weapons, store in inventory, and light attack. 
+- **[8]** Set up players picking up weapons, store in inventory, and light attack.
+- **[9]** Set up dumb client networking model. Server handles update method. Clients handle render method.
 
 ## Open Issues
 
-- **[?]** Set up dumb client networking model. Server handles update method. Clients handle render method.
 
