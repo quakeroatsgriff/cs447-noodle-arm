@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class Noodlearm extends StateBasedGame{
     public static final int STARTUPSTATE = 0;
     public static final int PLAYINGSTATE  = 1;
-    public static final int GAMEOVERSTATE  = 2;
+    public static final int CLIENTPLAYINGSTATE  = 2;
+    public static final int GAMEOVERSTATE  = 3;
 
     public final int ScreenWidth;
     public final int ScreenHeight;
@@ -65,6 +66,7 @@ public class Noodlearm extends StateBasedGame{
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new StartupState());
         addState(new PlayingState());
+        addState(new ClientPlayingState());
         addState(new GameoverState());
 
         //Preload resources here
