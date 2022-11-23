@@ -9,9 +9,8 @@
 - **[7]** Set up weapons class and characteristics
 - **[8]** Set up players picking up weapons, store in inventory, and light attack.
 - **[9]** Set up dumb client networking model. Server handles update method. Clients handle render method.
+- **[10]** Set up characters for both server and client
 
 ## Open Issues
-
-- **[10]** Set up characters for both server and client
 
 
