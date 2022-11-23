@@ -1,21 +1,14 @@
 package noodlearm;
 
-import jig.ResourceManager;
-import org.lwjgl.Sys;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.EmptyTransition;
-import org.newdawn.slick.state.transition.HorizontalSplitTransition;
+
 import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Stack;
-import jig.Vector;
 
 public class PlayingState extends BasicGameState {
     @Override
@@ -44,7 +37,7 @@ public class PlayingState extends BasicGameState {
                 "1 0 0 0 0 0 0 0 0 0 0 1\n" +
                 "1 0 0 0 0 0 0 0 0 0 0 1\n" +
                 "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                "1 0 2 0 0 0 0 0 0 0 0 1\n" +
+                "1 0 2 0 0 0 0 0 0 3 0 1\n" +
                 "1 0 0 0 0 0 0 0 0 0 0 1\n" +
                 "1 0 0 0 0 0 0 0 0 0 0 1\n" +
                 "1 1 1 1 1 1 1 1 1 1 1 1" );
@@ -67,7 +60,8 @@ public class PlayingState extends BasicGameState {
             grid_cell.render(g);
         }
         for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
-        na.player.render(g);
+        na.server_player.render(g);
+        na.client_player.render(g);
     }
 
     @Override
@@ -76,8 +70,8 @@ public class PlayingState extends BasicGameState {
         Noodlearm na = (Noodlearm)game;
         //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
         for(WeaponSprite ws : na.weapons_on_ground)    {
-            if((ws.grid_ID == na.player.grid_ID && !ws.attacking)){
-                na.player.pickupWeapon(ws);
+            if((ws.grid_ID == na.server_player.grid_ID && !ws.attacking)){
+                na.server_player.pickupWeapon(ws);
                 //Remove weapon sprite from world
                 na.weapons_on_ground.remove(ws);
                 break;
@@ -91,7 +85,7 @@ public class PlayingState extends BasicGameState {
                 }
             }
         }
-        na.player.update(na, delta);
+        na.server_player.update(na, delta);
         checkInput(input, na);
     }
 
@@ -102,10 +96,10 @@ public class PlayingState extends BasicGameState {
         //Player moves left
         if (input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
             //If the player is still frozen from moving the boulder
-            if (na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID - 1);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 0)) {
+            if (na.server_player.getRemainingTime() <= 0){
+                Grid new_location = na.grid.get(na.server_player.grid_ID - 1);
+                Grid old_location = na.grid.get(na.server_player.grid_ID);
+                if (na.server_player.move(new_location, old_location, 0)) {
                     na.server.send_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -114,10 +108,10 @@ public class PlayingState extends BasicGameState {
         //Player moves Right
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
-            if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID + 1);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 1)) {
+            if(na.server_player.getRemainingTime() <= 0){
+                Grid new_location = na.grid.get(na.server_player.grid_ID + 1);
+                Grid old_location = na.grid.get(na.server_player.grid_ID);
+                if (na.server_player.move(new_location, old_location, 1)) {
                     na.server.send_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -125,10 +119,10 @@ public class PlayingState extends BasicGameState {
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
-            if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID + 12);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 2)) {
+            if(na.server_player.getRemainingTime() <= 0){
+                Grid new_location = na.grid.get(na.server_player.grid_ID + 12);
+                Grid old_location = na.grid.get(na.server_player.grid_ID);
+                if (na.server_player.move(new_location, old_location, 2)) {
                     na.server.send_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -137,10 +131,10 @@ public class PlayingState extends BasicGameState {
         //Player moves Up
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
-            if(na.player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.player.grid_ID - 12);
-                Grid old_location = na.grid.get(na.player.grid_ID);
-                if (na.player.move(new_location, old_location, 3)) {
+            if(na.server_player.getRemainingTime() <= 0){
+                Grid new_location = na.grid.get(na.server_player.grid_ID - 12);
+                Grid old_location = na.grid.get(na.server_player.grid_ID);
+                if (na.server_player.move(new_location, old_location, 3)) {
                     na.server.send_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -149,23 +143,23 @@ public class PlayingState extends BasicGameState {
         //TODO
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
-            if(na.player.getRemainingTime() <= 0){
-                na.player.lightAttack(na);
+            if(na.server_player.getRemainingTime() <= 0){
+                na.server_player.lightAttack(na);
                 return; 
             }
         }
         //TODO
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
-            if(na.player.getRemainingTime() <= 0){
-                na.player.lightAttack(na);
+            if(na.server_player.getRemainingTime() <= 0){
+                na.server_player.lightAttack(na);
                 return; 
             };
         }
         //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
-            na.player.changeWeapon();
+            na.server_player.changeWeapon();
             return;
         }
     }
@@ -194,10 +188,15 @@ public class PlayingState extends BasicGameState {
                 int tile_type = Integer.parseInt( b );
                 // we can encode specialty tiles here
                 switch ( tile_type ) {
-                    // a two means a player, so we add floor tile then player
+                    // a two means the server's player, so we add floor tile then player
                     case 2:
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.player = new Player( na.grid.get( ID_counter++ ) );
+                        na.server_player = new Player( na.grid.get( ID_counter++ ) );
+                        break;
+                    // a three means the client's player, so we add floor tile then player
+                    case 3:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.client_player = new Player( na.grid.get( ID_counter++ ) );
                         break;
                     // regular tile
                     default:

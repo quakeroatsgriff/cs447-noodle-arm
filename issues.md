@@ -12,4 +12,6 @@
 
 ## Open Issues
 
+- **[10]** Set up characters for both server and client
+
 

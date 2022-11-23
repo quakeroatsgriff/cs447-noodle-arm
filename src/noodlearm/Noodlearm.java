@@ -27,7 +27,8 @@ public class Noodlearm extends StateBasedGame{
     Server server;
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
-    public Player player;
+    public Player server_player;
+    public Player client_player;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
