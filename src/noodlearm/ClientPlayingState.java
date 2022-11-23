@@ -46,10 +46,10 @@ public class ClientPlayingState extends PlayingState {
         Noodlearm na = (Noodlearm)game;
 
         if ( na.client.current_server_player_location != na.server_player.grid_ID & na.client.current_server_player_location != -1 ) {
-            na.server_player.move(na.grid.get(na.client.current_server_player_location), na.grid.get(na.server_player.grid_ID), 0);
+            na.server_player.move(na.grid.get(na.client.current_server_player_location), na.grid.get(na.server_player.grid_ID));
         }
         if ( na.client.current_client_player_location != na.client_player.grid_ID & na.client.current_client_player_location != -1 ) {
-            na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID), 0);
+            na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID));
         }
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);

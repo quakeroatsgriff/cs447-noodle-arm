@@ -52,7 +52,7 @@ public class Server extends Thread {
                 case "PLAYER_MOVE_START":
                     Grid old_location = na.grid.get( Integer.parseInt( this.input_stream.nextLine() ) );
                     Grid new_location = na.grid.get( Integer.parseInt( this.input_stream.nextLine() ) );
-                    if (na.client_player.move( new_location, old_location, 0)) {
+                    if (na.client_player.move( new_location, old_location)) {
                         na.server.send_client_player_location( Integer.toString( new_location.getID() ) );
                     }
                     this.input_stream.nextLine();

@@ -100,7 +100,7 @@ public class PlayingState extends BasicGameState {
             if (na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
-                if (na.server_player.move(new_location, old_location, 0)) {
+                if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -112,7 +112,7 @@ public class PlayingState extends BasicGameState {
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
-                if (na.server_player.move(new_location, old_location, 1)) {
+                if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -123,7 +123,7 @@ public class PlayingState extends BasicGameState {
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 12);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
-                if (na.server_player.move(new_location, old_location, 2)) {
+                if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
@@ -135,7 +135,7 @@ public class PlayingState extends BasicGameState {
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 12);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
-                if (na.server_player.move(new_location, old_location, 3)) {
+                if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
