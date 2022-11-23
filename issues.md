@@ -13,4 +13,6 @@
 
 ## Open Issues
 
-
+- **[11]** Set up players picking up weapons, store in inventory, and light attack over network.
+- **[12]** Add enemies that pursue and attack the players
+- **[13]** Setup procedurally generated map
