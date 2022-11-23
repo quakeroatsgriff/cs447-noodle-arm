@@ -20,7 +20,10 @@ public class Server extends Thread {
     Scanner input_stream;
     // stream for output to client
     PrintWriter output_stream;
-    public Server() {
+
+    Noodlearm na;
+
+    public Server( Noodlearm na ) {
         // setup server_socket, socket, and I/O streams
         try {
             this.server_socket = new ServerSocket( 1234 );
@@ -30,6 +33,7 @@ public class Server extends Thread {
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
+        this.na = na;
     }
 
     // gets called when start() is invoked
@@ -38,8 +42,25 @@ public class Server extends Thread {
         // loop while we're still receiving information from the client
         // right now we're just echoing back to the client
         while ( input_stream.hasNextLine() ) {
-            output_stream.println( input_stream.nextLine() );
-            output_stream.flush();
+
+            // we store next line
+            String next_line = this.input_stream.nextLine();
+
+            // switch statement for matching different networking keywords
+            switch ( next_line ) {
+
+                case "PLAYER_MOVE_START":
+                    Grid old_location = na.grid.get( Integer.parseInt( this.input_stream.nextLine() ) );
+                    Grid new_location = na.grid.get( Integer.parseInt( this.input_stream.nextLine() ) );
+                    if (na.client_player.move( new_location, old_location)) {
+                        na.server.send_client_player_location( Integer.toString( new_location.getID() ) );
+                    }
+                    this.input_stream.nextLine();
+                    break;
+
+                default:
+                    System.out.println( "From Client: " + this.input_stream.nextLine() );
+            }
         }
 
         // clean up and print debug message
@@ -59,8 +80,13 @@ public class Server extends Thread {
         sc.close();
     }
 
-    public void send_player_location( String location ) {
-        this.output_stream.println( "PLAYER_LOC_START\n" + location + "\nPLAYER_LOC_END" );
+    public void send_server_player_location( String location ) {
+        this.output_stream.println( "SERVER_PLAYER_LOC_START\n" + location + "\nSERVER_PLAYER_LOC_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_client_player_location( String location ) {
+        this.output_stream.println( "CLIENT_PLAYER_LOC_START\n" + location + "\nCLIENT_PLAYER_LOC_END" );
         this.output_stream.flush();
     }
 

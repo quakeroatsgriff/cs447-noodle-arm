@@ -15,7 +15,8 @@ import java.util.Scanner;
 public class Client extends Thread {
 
     public String current_map = "";
-    public Integer current_player_location = -1;
+    public Integer current_server_player_location = -1;
+    public Integer current_client_player_location = -1;
 
     // socket for communicating to server
     Socket socket;
@@ -88,9 +89,16 @@ public class Client extends Thread {
                         current_map = map.toString();
                         break;
 
-                    case "PLAYER_LOC_START":
+                    case "SERVER_PLAYER_LOC_START":
                         // we get new player location from the server
-                        current_player_location = Integer.parseInt(this.input_stream.nextLine());
+                        current_server_player_location = Integer.parseInt(this.input_stream.nextLine());
+                        // we get rid of next line (should be PLAYER_LOC_END)
+                        this.input_stream.nextLine();
+                        break;
+
+                    case "CLIENT_PLAYER_LOC_START":
+                        // we get new player location from the server
+                        current_client_player_location = Integer.parseInt(this.input_stream.nextLine());
                         // we get rid of next line (should be PLAYER_LOC_END)
                         this.input_stream.nextLine();
                         break;
@@ -108,10 +116,10 @@ public class Client extends Thread {
         this.kill_thread();
     }
 
-    // for sending a string to the server
-    public void send( String message ) {
+    // for sending a request to move the client player
+    public void send_move_request( String old_location, String new_location ) {
         // we write the message to the output stream
-        this.output_stream.println( message );
+        this.output_stream.println( "PLAYER_MOVE_START\n" + old_location + "\n" + new_location + "\nPLAYER_MOVE_END" );
         this.output_stream.flush();
     }
 
