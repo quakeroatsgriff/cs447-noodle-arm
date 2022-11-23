@@ -25,7 +25,7 @@ public class PlayingState extends BasicGameState {
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
         // create and start server thread
-        na.server = new Server();
+        na.server = new Server( na );
         na.server.start();
 
         initTestLevel( na );
@@ -86,6 +86,7 @@ public class PlayingState extends BasicGameState {
             }
         }
         na.server_player.update(na, delta);
+        na.client_player.update(na, delta);
         checkInput(input, na);
     }
 
@@ -100,7 +101,7 @@ public class PlayingState extends BasicGameState {
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location, 0)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                    na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
             }
@@ -112,7 +113,7 @@ public class PlayingState extends BasicGameState {
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location, 1)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                    na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
             }
@@ -123,7 +124,7 @@ public class PlayingState extends BasicGameState {
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 12);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location, 2)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                    na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
             }
@@ -135,7 +136,7 @@ public class PlayingState extends BasicGameState {
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 12);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location, 3)) {
-                    na.server.send_player_location(Integer.toString(new_location.getID()));
+                    na.server.send_server_player_location(Integer.toString(new_location.getID()));
                 }
                 return;
             }
