@@ -58,6 +58,11 @@ public class Server extends Thread {
                     this.input_stream.nextLine();
                     break;
 
+                case "PLAYER_LIGHT_ATTACK_START":
+                    na.client_player.lightAttack(na);
+                    this.input_stream.nextLine();
+                    break;
+
                 default:
                     System.out.println( "From Client: " + this.input_stream.nextLine() );
             }
@@ -87,6 +92,20 @@ public class Server extends Thread {
 
     public void send_client_player_location( String location ) {
         this.output_stream.println( "CLIENT_PLAYER_LOC_START\n" + location + "\nCLIENT_PLAYER_LOC_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_server_weapon_pickup_notice( String grid_ID ) {
+        this.output_stream.println( "SERVER_WEAPON_PICKUP_START\n" + grid_ID + "\nSERVER_WEAPON_PICKUP_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_client_weapon_pickup_notice( String grid_ID ) {
+        this.output_stream.println( "CLIENT_WEAPON_PICKUP_START\n" + grid_ID + "\nCLIENT_WEAPON_PICKUP_END" );
+        this.output_stream.flush();
+    }
+    public void send_light_attack() {
+        this.output_stream.println( "PLAYER_LIGHT_ATTACK_START\nPLAYER_LIGHT_ATTACK_END" );
         this.output_stream.flush();
     }
 

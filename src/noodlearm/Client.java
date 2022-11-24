@@ -17,6 +17,7 @@ public class Client extends Thread {
     public String current_map = "";
     public Integer current_server_player_location = -1;
     public Integer current_client_player_location = -1;
+    public boolean lock_weapon_array = false;
 
     // socket for communicating to server
     Socket socket;
@@ -24,8 +25,11 @@ public class Client extends Thread {
     PrintWriter output_stream;
     // input_stream for recieving information from server
     Scanner input_stream;
+    Noodlearm na;
 
-    public Client() {
+    public Client( Noodlearm na ) {
+
+        this.na = na;
 
         // here we loop while we're attempting to connect to a server
         boolean scanning = true;
@@ -70,6 +74,7 @@ public class Client extends Thread {
 
                 // we store next line
                 String next_line = this.input_stream.nextLine();
+                Integer weapon_grid_id;
 
                 // switch statement for matching different networking keywords
                 switch ( next_line ) {
@@ -103,12 +108,49 @@ public class Client extends Thread {
                         this.input_stream.nextLine();
                         break;
 
+                    case "SERVER_WEAPON_PICKUP_START":
+                        weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
+
+                        while ( lock_weapon_array )
+                            Thread.sleep( 5 );
+                        for ( WeaponSprite ws : this.na.weapons_on_ground ) {
+                            if ( ws.grid_ID == weapon_grid_id ) {
+                                na.server_player.pickupWeapon(ws);
+                                na.weapons_on_ground.remove(ws);
+                                break;
+                            }
+                        }
+                        this.input_stream.nextLine();
+                        break;
+
+                    case "CLIENT_WEAPON_PICKUP_START":
+                        weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
+
+                        while ( lock_weapon_array )
+                            Thread.sleep( 5 );
+                        for ( WeaponSprite ws : this.na.weapons_on_ground ) {
+                            if ( ws.grid_ID == weapon_grid_id ) {
+                                na.client_player.pickupWeapon(ws);
+                                na.weapons_on_ground.remove(ws);
+                                break;
+                            }
+                        }
+                        this.input_stream.nextLine();
+                        break;
+
+                    case "PLAYER_LIGHT_ATTACK_START":
+                        na.server_player.lightAttack( na );
+                        this.input_stream.nextLine();
+                        break;
+
                     default:
                         System.out.println( "From Server: " + this.input_stream.nextLine() );
                 }
             }
         } catch ( IllegalStateException e ) { // occurs when kill_thread is called
             return;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         // clean up and print debug message
@@ -120,6 +162,11 @@ public class Client extends Thread {
     public void send_move_request( String old_location, String new_location ) {
         // we write the message to the output stream
         this.output_stream.println( "PLAYER_MOVE_START\n" + old_location + "\n" + new_location + "\nPLAYER_MOVE_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_light_attack() {
+        this.output_stream.println( "PLAYER_LIGHT_ATTACK_START\nPLAYER_LIGHT_ATTACK_END" );
         this.output_stream.flush();
     }
 

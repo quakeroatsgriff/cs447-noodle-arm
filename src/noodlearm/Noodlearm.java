@@ -51,7 +51,7 @@ public class Noodlearm extends StateBasedGame{
         //Circle bounding boxes so entities can be rotated. Because AABB doesn't allow that...
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
-        weapons_on_ground =new ArrayList<WeaponSprite>(1);
+        weapons_on_ground = new ArrayList<WeaponSprite>(1);
         network_identity = "Server";
     }
 

@@ -46,4 +46,27 @@ public class Weapon{
         this.rotation_amount = rotation_amount;
         this.texture = texture;
     }
+
+    static public boolean pickupWeapon( WeaponSprite ws, Noodlearm na, Player player ) {
+        //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
+        if((ws.grid_ID == player.grid_ID && !ws.attacking)){
+            player.pickupWeapon(ws);
+            //Remove weapon sprite from world
+            na.weapons_on_ground.remove(ws);
+            return true;
+        }
+        return false;
+    }
+
+    static public boolean attackTimer( WeaponSprite ws, Noodlearm na, int delta ) {
+        if (ws.attacking) {
+            ws.update(na, delta);
+            //If an attacking weapon's timer has reached 0, remove the weapon from the world
+            if (ws.attacking_timer <= 0) {
+                na.weapons_on_ground.remove(ws);
+                return true;
+            }
+        }
+        return false;
+    }
 }

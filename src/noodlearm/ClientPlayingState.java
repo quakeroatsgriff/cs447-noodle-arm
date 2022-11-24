@@ -1,8 +1,6 @@
 package noodlearm;
 
-import jig.Vector;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
@@ -25,14 +23,14 @@ public class ClientPlayingState extends PlayingState {
         Noodlearm na = (Noodlearm)game;
 
         // create and start client thread
-        na.client = new Client();
+        na.client = new Client( na );
         na.client.start();
 
         // here we check if the server sent us a map,
         // if they haven't we sleep for one second and check again
         while ( na.client.current_map.equals( "" ) ) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep( 200 );
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -53,6 +51,12 @@ public class ClientPlayingState extends PlayingState {
         if ( na.client.current_client_player_location != na.client_player.grid_ID & na.client.current_client_player_location != -1 ) {
             na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID));
         }
+
+        for ( WeaponSprite ws : na.weapons_on_ground ) {
+            if ( Weapon.attackTimer( ws, na, delta ) )
+                break;
+        }
+
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
         checkInput( input, na );
@@ -75,7 +79,7 @@ public class ClientPlayingState extends PlayingState {
         //Player moves Right
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
-            if(na.server_player.getRemainingTime() <= 0){
+            if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID + 1);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
@@ -84,7 +88,7 @@ public class ClientPlayingState extends PlayingState {
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
-            if(na.server_player.getRemainingTime() <= 0){
+            if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID + 12);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
@@ -94,7 +98,7 @@ public class ClientPlayingState extends PlayingState {
         //Player moves Up
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
-            if(na.server_player.getRemainingTime() <= 0){
+            if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID - 12);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
@@ -104,23 +108,26 @@ public class ClientPlayingState extends PlayingState {
         //TODO
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
-            if(na.server_player.getRemainingTime() <= 0){
-                na.server_player.lightAttack(na);
+            if(na.client_player.getRemainingTime() <= 0){
+                na.client.send_light_attack();
+                na.client_player.lightAttack(na);
                 return;
             }
         }
         //TODO
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
-            if(na.server_player.getRemainingTime() <= 0){
-                na.server_player.lightAttack(na);
+            if(na.client_player.getRemainingTime() <= 0){
+                na.client.send_light_attack();
+                na.client_player.lightAttack(na);
                 return;
             };
         }
         //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
-            na.server_player.changeWeapon();
+            if ( !na.client_player.weapon_inv.isEmpty() )
+                na.client_player.changeWeapon();
             return;
         }
     }
