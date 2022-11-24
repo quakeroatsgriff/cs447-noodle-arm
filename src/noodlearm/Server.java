@@ -90,6 +90,11 @@ public class Server extends Thread {
         this.output_stream.flush();
     }
 
+    public void send_weapon_pickup_notice( String grid_ID ) {
+        this.output_stream.println( "PICKUP_WEAPON_START\n" + grid_ID + "\nPICKUP_WEAPON_END" );
+        this.output_stream.flush();
+    }
+
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();

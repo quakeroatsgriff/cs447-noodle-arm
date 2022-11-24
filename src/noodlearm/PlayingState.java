@@ -29,6 +29,8 @@ public class PlayingState extends BasicGameState {
         na.server = new Server( na );
         na.server.start();
 
+        na.client = null;
+
         initTestLevel( na );
         na.server.send_map( "1 1 1 1 1 1 1 1 1 1 1 1\n" +
                             "1 0 0 0 0 0 0 0 0 0 0 1\n" +
@@ -93,6 +95,15 @@ public class PlayingState extends BasicGameState {
         other_player.render(g);
         other_player.translate( world_coordinate_translation );
 
+        if ( na.client != null) {
+            while (na.network_identity.matches("Client") & na.client.lock_weapon_array) {
+                try {
+                    Thread.sleep( 1 );
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         // render weapons
         for(WeaponSprite ws : na.weapons_on_ground) {
             // adjust position relative to player, render and move back
@@ -115,23 +126,18 @@ public class PlayingState extends BasicGameState {
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
-        //If player is on the same tile as a weapon on the ground, equip and remove the weapon from the world
-        for(WeaponSprite ws : na.weapons_on_ground)    {
-            if((ws.grid_ID == na.server_player.grid_ID && !ws.attacking)){
-                na.server_player.pickupWeapon(ws);
-                //Remove weapon sprite from world
-                na.weapons_on_ground.remove(ws);
+
+        for ( WeaponSprite ws : na.weapons_on_ground ) {
+            if ( Weapon.attackTimer( ws, na, delta ) )
+                break;
+            if ( Weapon.pickupWeapon( ws, na, na.server_player ) )
+                break;
+            if ( Weapon.pickupWeapon( ws, na, na.client_player ) ) {
+                na.server.send_weapon_pickup_notice( Integer.toString( ws.grid_ID ) );
                 break;
             }
-            if(ws.attacking){
-                ws.update(na, delta);
-                //If an attacking weapon's timer has reached 0, remove the weapon from the world
-                if(ws.attacking_timer <=0){
-                    na.weapons_on_ground.remove(ws);
-                    break;
-                }
-            }
         }
+
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
         checkInput(input, na);
@@ -207,7 +213,8 @@ public class PlayingState extends BasicGameState {
         //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
-            na.server_player.changeWeapon();
+            if ( !na.server_player.weapon_inv.isEmpty() )
+                na.server_player.changeWeapon();
             return;
         }
     }

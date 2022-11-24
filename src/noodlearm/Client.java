@@ -17,6 +17,7 @@ public class Client extends Thread {
     public String current_map = "";
     public Integer current_server_player_location = -1;
     public Integer current_client_player_location = -1;
+    public boolean lock_weapon_array = false;
 
     // socket for communicating to server
     Socket socket;
@@ -24,8 +25,11 @@ public class Client extends Thread {
     PrintWriter output_stream;
     // input_stream for recieving information from server
     Scanner input_stream;
+    Noodlearm na;
 
-    public Client() {
+    public Client( Noodlearm na ) {
+
+        this.na = na;
 
         // here we loop while we're attempting to connect to a server
         boolean scanning = true;
@@ -100,6 +104,21 @@ public class Client extends Thread {
                         // we get new player location from the server
                         current_client_player_location = Integer.parseInt(this.input_stream.nextLine());
                         // we get rid of next line (should be PLAYER_LOC_END)
+                        this.input_stream.nextLine();
+                        break;
+
+                    case "PICKUP_WEAPON_START":
+                        Integer weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
+
+                        lock_weapon_array = true;
+                        for ( WeaponSprite ws : this.na.weapons_on_ground ) {
+                            if ( ws.grid_ID == weapon_grid_id ) {
+                                na.client_player.pickupWeapon(ws);
+                                na.weapons_on_ground.remove(ws);
+                                break;
+                            }
+                        }
+                        lock_weapon_array = false;
                         this.input_stream.nextLine();
                         break;
 
