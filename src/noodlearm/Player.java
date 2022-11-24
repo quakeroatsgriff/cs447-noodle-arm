@@ -68,9 +68,18 @@ public class Player extends Entity {
     }
     
 
-    public boolean move(Grid grid_point_new, Grid grid_point_old, int direction){
+    public boolean move(Grid grid_point_new, Grid grid_point_old){
         float dir_x=1.0f,dir_y=1.0f;
-        this.direction=direction;
+
+        if ( grid_point_new.getID() == grid_point_old.getID() - 1 ) {
+            this.direction = 0;
+        } else if ( grid_point_new.getID() == grid_point_old.getID() + 1 ) {
+            this.direction = 1;
+        } else if ( grid_point_new.getID() == grid_point_old.getID() + 48 ) {
+            this.direction = 2;
+        } else if ( grid_point_new.getID() == grid_point_old.getID() - 48 ) {
+            this.direction = 3;
+        }
         //Update player sprite direction
         // changePlayerDirection(direction);
         switch(direction){

@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class Noodlearm extends StateBasedGame{
     public static final int STARTUPSTATE = 0;
     public static final int PLAYINGSTATE  = 1;
-    public static final int GAMEOVERSTATE  = 2;
+    public static final int CLIENTPLAYINGSTATE  = 2;
+    public static final int GAMEOVERSTATE  = 3;
 
     public final int ScreenWidth;
     public final int ScreenHeight;
@@ -26,7 +27,9 @@ public class Noodlearm extends StateBasedGame{
     Server server;
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
-    public Player player;
+    public Player server_player;
+    public Player client_player;
+    public String network_identity;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
@@ -48,23 +51,15 @@ public class Noodlearm extends StateBasedGame{
         //Circle bounding boxes so entities can be rotated. Because AABB doesn't allow that...
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
-        weapons_on_ground =new ArrayList<WeaponSprite>(1);
-
-        // below is for networking testing
-
-        // create and start server thread
-        server = new Server();
-        server.start();
-
-        // create and start client thread
-        client = new Client();
-        client.start();
+        weapons_on_ground = new ArrayList<WeaponSprite>(1);
+        network_identity = "Server";
     }
 
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new StartupState());
         addState(new PlayingState());
+        addState(new ClientPlayingState());
         addState(new GameoverState());
 
         //Preload resources here
