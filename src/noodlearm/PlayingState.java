@@ -55,26 +55,60 @@ public class PlayingState extends BasicGameState {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         Noodlearm na = (Noodlearm)game;
 
-        Vector old_postition = na.server_player.getPosition();
+        Player player = null, other_player = null;
+
+        if ( na.network_identity.matches( "Server" ) ) {
+            player = na.server_player;
+            other_player = na.client_player;
+        } else if ( na.network_identity.matches( "Client" ) ) {
+            player = na.client_player;
+            other_player = na.server_player;
+        } else {
+            System.err.println( "Fatal Error: Network identity unknown." );
+            System.exit( -1 );
+        }
+
+        // amount we need to translate objects to keep player on center of screen
+        Vector relative_coordinate_translation = new Vector(
+                -player.getX() + na.ScreenWidth / 2.0f,
+                -player.getY() + na.ScreenHeight / 2.0f
+        );
+
+        // negation of relative_server_player_coordinates, saves function calls
+        Vector world_coordinate_translation = relative_coordinate_translation.negate();
 
         for(Grid grid_cell : na.grid)  {
             //Debug draw grid tile numbers
             // g.drawString(""+grid_cell.getID(), grid_cell.getX()-16, grid_cell.getY()-16);
             //Grid textures
 
-            grid_cell.translate( -na.server_player.getX() + na.ScreenWidth / 2.0f, -na.server_player.getY() + na.ScreenHeight / 2.0f );
+            // adjust position relative to player, render and move back
+            grid_cell.translate( relative_coordinate_translation );
             grid_cell.render(g);
-            grid_cell.translate( na.server_player.getX() - na.ScreenWidth / 2.0f, na.server_player.getY() - na.ScreenHeight / 2.0f );
+            grid_cell.translate( world_coordinate_translation );
         }
 
-        na.client_player.translate( -na.server_player.getX() + na.ScreenWidth / 2.0f, -na.server_player.getY() + na.ScreenHeight / 2.0f );
-        na.client_player.render(g);
-        na.client_player.translate( na.server_player.getX() - na.ScreenWidth / 2.0f, na.server_player.getY() - na.ScreenHeight / 2.0f );
+        // adjust position relative to player, render and move back
+        other_player.translate( relative_coordinate_translation );
+        other_player.render(g);
+        other_player.translate( world_coordinate_translation );
 
-        na.server_player.setPosition( na.ScreenWidth / 2.0f, na.ScreenHeight / 2.0f );
-        na.server_player.render(g);
-        na.server_player.setPosition( old_postition );
-        for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
+        // render weapons
+        for(WeaponSprite ws : na.weapons_on_ground) {
+            // adjust position relative to player, render and move back
+            ws.translate( relative_coordinate_translation );
+            ws.render(g);
+            ws.translate( world_coordinate_translation );
+        }
+
+        // store position of player so we can move them back after render
+        Vector old_postition = player.getPosition();
+        // move player to center screen
+        player.setPosition( na.ScreenWidth / 2.0f, na.ScreenHeight / 2.0f );
+        // render player
+        player.render(g);
+        // move them back
+        player.setPosition( old_postition );
     }
 
     @Override

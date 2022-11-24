@@ -13,7 +13,6 @@ import jig.Vector;
 
 public class StartupState extends BasicGameState {
 
-    private String network_identity = "Server";
     @Override
     public int getID() {
         return Noodlearm.STARTUPSTATE;
@@ -30,11 +29,12 @@ public class StartupState extends BasicGameState {
     }
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        
+
+        Noodlearm na = (Noodlearm)game;
         //TODO
         g.drawString( "Press S to start server or C to connect as client.", 75,350 );
         g.drawString( "Press space (or A on controller) to start.", 100,400 );
-        g.drawString( network_identity, 250, 450 );
+        g.drawString( na.network_identity, 250, 450 );
 
         //g.drawImage(ResourceManager.getImage(Noodlearm.STARTUP_SCREEN_RES), 0, 0);
     }
@@ -45,7 +45,7 @@ public class StartupState extends BasicGameState {
         Noodlearm na = (Noodlearm)game;
 		//Await user input to start the game (A press on game controller0)
 		if (input.isKeyDown(Input.KEY_SPACE) || input.isButton1Pressed(Input.ANY_CONTROLLER)) {
-            if ( network_identity.equals( "Server" ) ) {
+            if ( na.network_identity.equals( "Server" ) ) {
                 na.enterState(Noodlearm.PLAYINGSTATE, new EmptyTransition(), new HorizontalSplitTransition());
             } else {
                 na.enterState(Noodlearm.CLIENTPLAYINGSTATE, new EmptyTransition(), new HorizontalSplitTransition());
@@ -53,11 +53,11 @@ public class StartupState extends BasicGameState {
         }
 
         if ( input.isKeyDown(Input.KEY_C) ){
-            network_identity = "Client";
+            na.network_identity = "Client";
         }
 
         if ( input.isKeyDown(Input.KEY_S) ){
-            network_identity = "Server";
+            na.network_identity = "Server";
         }
     }
 }

@@ -43,31 +43,6 @@ public class ClientPlayingState extends PlayingState {
     }
 
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        Noodlearm na = (Noodlearm)game;
-
-        Vector old_postition = na.client_player.getPosition();
-
-        for(Grid grid_cell : na.grid)  {
-            //Debug draw grid tile numbers
-            // g.drawString(""+grid_cell.getID(), grid_cell.getX()-16, grid_cell.getY()-16);
-            //Grid textures
-
-            grid_cell.translate( -na.client_player.getX() + na.ScreenWidth / 2.0f, -na.client_player.getY() + na.ScreenHeight / 2.0f );
-            grid_cell.render(g);
-            grid_cell.translate( na.client_player.getX() - na.ScreenWidth / 2.0f, na.client_player.getY() - na.ScreenHeight / 2.0f );
-        }
-        na.server_player.translate( -na.client_player.getX() + na.ScreenWidth / 2.0f, -na.client_player.getY() + na.ScreenHeight / 2.0f );
-        na.server_player.render(g);
-        na.server_player.translate( na.client_player.getX() - na.ScreenWidth / 2.0f, na.client_player.getY() - na.ScreenHeight / 2.0f );
-
-        na.client_player.setPosition( na.ScreenWidth / 2.0f, na.ScreenHeight / 2.0f );
-        na.client_player.render(g);
-        na.client_player.setPosition( old_postition );
-        for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
-    }
-
-    @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;

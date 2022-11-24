@@ -29,6 +29,7 @@ public class Noodlearm extends StateBasedGame{
     public ArrayList<WeaponSprite> weapons_on_ground;
     public Player server_player;
     public Player client_player;
+    public String network_identity;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
@@ -51,6 +52,7 @@ public class Noodlearm extends StateBasedGame{
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
         weapons_on_ground =new ArrayList<WeaponSprite>(1);
+        network_identity = "Server";
     }
 
     @Override
