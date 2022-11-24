@@ -66,12 +66,15 @@ public class PlayingState extends BasicGameState {
             grid_cell.render(g);
             grid_cell.translate( na.server_player.getX() - na.ScreenWidth / 2.0f, na.server_player.getY() - na.ScreenHeight / 2.0f );
         }
+
+        na.client_player.translate( -na.server_player.getX() + na.ScreenWidth / 2.0f, -na.server_player.getY() + na.ScreenHeight / 2.0f );
+        na.client_player.render(g);
+        na.client_player.translate( na.server_player.getX() - na.ScreenWidth / 2.0f, na.server_player.getY() - na.ScreenHeight / 2.0f );
+
         na.server_player.setPosition( na.ScreenWidth / 2.0f, na.ScreenHeight / 2.0f );
         na.server_player.render(g);
         na.server_player.setPosition( old_postition );
         for(WeaponSprite ws : na.weapons_on_ground) ws.render(g);
-
-        na.client_player.render(g);
     }
 
     @Override
