@@ -23,12 +23,21 @@ public class MapGenerator {
         }
 
         // run cellular automata rules 5 times to make cave-like map
-        for ( int i = 0; i < 5; i++ )
+        for ( int i = 0; i < 10; i++ )
             map = new ArrayList<Integer>( cellular_automata_method( map ) );
 
         // place the players in the middle of the map
         map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) , 2 );
         map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) + 1 , 3 );
+
+        for ( int x = 0; x < this.width; x++ ) {
+            map.set( x , 1 );
+            map.set( ( ( this.height - 1)  * this.height ) + x , 1 );
+        }
+        for ( int y = 0; y < this.height * ( this.height - 1 ); y += this.height ) {
+            map.set( y , 1 );
+            map.set( ( this.width - 1 ) + y , 1 );
+        }
 
         // convert the map from an array to a string
         StringBuilder string_builder = new StringBuilder();
