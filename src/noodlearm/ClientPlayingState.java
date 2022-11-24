@@ -89,7 +89,7 @@ public class ClientPlayingState extends PlayingState {
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.client_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.client_player.grid_ID + 12);
+                Grid new_location = na.grid.get(na.client_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
                 return;
@@ -99,7 +99,7 @@ public class ClientPlayingState extends PlayingState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.client_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.client_player.grid_ID - 12);
+                Grid new_location = na.grid.get(na.client_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
                 return;

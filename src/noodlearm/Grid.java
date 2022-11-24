@@ -17,8 +17,8 @@ public class Grid extends Entity{
     }
     //Regular grid tile in generation
     public Grid(int texture_type, int x_pos, int y_pos, int ID){
-        //Multiply grid's position with the initializor iterator plus a screen offset.
-        super(x_pos*64+24,y_pos*64+64);
+        //Multiply grid's position with the initializor iterator
+        super(x_pos*64,y_pos*64);
         this.entity="";
         this.ID=ID;
         this.type=texture_type;

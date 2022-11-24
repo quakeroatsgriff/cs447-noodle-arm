@@ -16,18 +16,21 @@ public class MapGenerator {
 
     public String generate_map() {
 
+        // flip a coin for each tile in the grid to see if it's a wall or floor
         ArrayList<Integer> map = new ArrayList<Integer>( this.width * this.height );
         for ( int i = 0; i < this.height * this.width; i++ ) {
             map.add( i, rand.nextInt( 2 ) );
         }
 
-        map = new ArrayList<Integer>( cellular_automata_method( map ) );
-        map = new ArrayList<Integer>( cellular_automata_method( map ) );
-        map = new ArrayList<Integer>( cellular_automata_method( map ) );
+        // run cellular automata rules 5 times to make cave-like map
+        for ( int i = 0; i < 5; i++ )
+            map = new ArrayList<Integer>( cellular_automata_method( map ) );
 
-        map.set( 0, 2 );
-        map.set( 1, 3 );
+        // place the players in the middle of the map
+        map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) , 2 );
+        map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) + 1 , 3 );
 
+        // convert the map from an array to a string
         StringBuilder string_builder = new StringBuilder();
         for ( int y = 0; y < this.height; y++ ) {
             for ( int x = 0; x < this.width; x++ ) {
@@ -42,6 +45,7 @@ public class MapGenerator {
         return string_builder.toString();
     }
 
+    // method that runs rules on an array_list to change the terrain of a map, returns an altered version
     private ArrayList<Integer> cellular_automata_method( ArrayList<Integer> map ) {
         Integer north, east, south, west, this_cell, this_cell_index;
         for ( int y = 0; y < this.height; y++ ) {

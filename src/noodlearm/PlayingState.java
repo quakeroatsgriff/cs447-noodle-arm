@@ -160,7 +160,7 @@ public class PlayingState extends BasicGameState {
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.server_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.server_player.grid_ID + 12);
+                Grid new_location = na.grid.get(na.server_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
@@ -172,7 +172,7 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.server_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.server_player.grid_ID - 12);
+                Grid new_location = na.grid.get(na.server_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
@@ -209,7 +209,7 @@ public class PlayingState extends BasicGameState {
 
     private void initTestLevel(Noodlearm na){
 
-        MapGenerator map_generator = new MapGenerator( 12, 12 );
+        MapGenerator map_generator = new MapGenerator( 48, 48 );
         String map = map_generator.generate_map();
         na.server.send_map( map );
 
