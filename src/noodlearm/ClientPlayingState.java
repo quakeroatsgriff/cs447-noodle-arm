@@ -162,6 +162,18 @@ public class ClientPlayingState extends PlayingState {
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.client_player = new Player( na.grid.get( ID_counter++ ) );
                         break;
+                    case 4:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SWORD") );
+                        break;
+                    case 5:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SPEAR") );
+                        break;
+                    case 6:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );
+                        break;
                     // regular tile
                     default:
                         na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
@@ -171,10 +183,6 @@ public class ClientPlayingState extends PlayingState {
             x = 0; y++;
         }
         sc.close();
-
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(33), "SWORD"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(45), "CLUB"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(57), "SPEAR"));
     }
 
 }

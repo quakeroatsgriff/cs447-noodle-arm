@@ -1,5 +1,7 @@
 package noodlearm;
 
+import org.newdawn.slick.util.pathfinding.*;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -7,22 +9,42 @@ public class MapGenerator {
 
     int width, height;
     Random rand;
+    TileBasedMap tile_map;
+    AStarPathFinder path_finder;
+    ArrayList<Integer> map;
 
     public MapGenerator( int width, int height ) {
         this.width = width;
         this.height = height;
         this.rand = new Random();
+        this.tile_map = new TileBasedMap() {
+            @Override
+            public int getWidthInTiles() { return width; }
+            @Override
+            public int getHeightInTiles() { return height; }
+            @Override
+            public void pathFinderVisited(int i, int i1) {}
+            @Override
+            public boolean blocked(PathFindingContext pathFindingContext, int x, int y) { return map.get( ( y * height ) + x ) == 1; }
+            @Override
+            public float getCost(PathFindingContext pathFindingContext, int i, int i1) { return 1.0f; }
+        };
+        this.path_finder = new AStarPathFinder(
+                this.tile_map,
+                width * height,
+                false
+        );
     }
 
     public String generate_map() {
 
         // flip a coin for each tile in the grid to see if it's a wall or floor
-        ArrayList<Integer> map = new ArrayList<Integer>( this.width * this.height );
+        map = new ArrayList<Integer>( this.width * this.height );
         for ( int i = 0; i < this.height * this.width; i++ ) {
             map.add( i, rand.nextInt( 2 ) );
         }
 
-        // run cellular automata rules 5 times to make cave-like map
+        // run cellular automata rules 10 times to make cave-like map
         for ( int i = 0; i < 10; i++ )
             map = new ArrayList<Integer>( cellular_automata_method( map ) );
 
@@ -30,6 +52,7 @@ public class MapGenerator {
         map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) , 2 );
         map.set( ( ( this.height / 2 ) * this.height ) + ( this.width / 2 ) + 1 , 3 );
 
+        // add border around map
         for ( int x = 0; x < this.width; x++ ) {
             map.set( x , 1 );
             map.set( ( ( this.height - 1)  * this.height ) + x , 1 );
@@ -37,6 +60,13 @@ public class MapGenerator {
         for ( int y = 0; y < this.height * ( this.height - 1 ); y += this.height ) {
             map.set( y , 1 );
             map.set( ( this.width - 1 ) + y , 1 );
+        }
+
+        // place three swords, spears, and clubs randomly around the map
+        for ( int i = 0; i < 3; i++ ) {
+            map.set( this.reachable_location(), 4 );
+            map.set( this.reachable_location(), 5 );
+            map.set( this.reachable_location(), 6 );
         }
 
         // convert the map from an array to a string
@@ -79,7 +109,7 @@ public class MapGenerator {
                         map.set( this_cell_index, 0 );
                     // if this cell has two or three living neighbors
                     }
-                    // otherwise it stays alive
+                    // then this cell stays alive
                 // if this cell is dead
                 } else {
                     if ( north + east + south + west == 3 ) {
@@ -91,5 +121,17 @@ public class MapGenerator {
             }
         }
         return map;
+    }
+
+    private int reachable_location() {
+        int x = this.rand.nextInt( this.width );
+        int y = this.rand.nextInt( this.height );
+        Path path = this.path_finder.findPath( null, this.width / 2, this.height / 2, x, y );
+        while ( path == null ) {
+            x = this.rand.nextInt( this.width );
+            y = this.rand.nextInt( this.height );
+            path = this.path_finder.findPath( null, this.width / 2, this.height / 2, x, y );
+        }
+        return ( y * this.height ) + x;
     }
 }
