@@ -162,14 +162,17 @@ public class ClientPlayingState extends PlayingState {
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.client_player = new Player( na.grid.get( ID_counter++ ) );
                         break;
+                    // a four means a sword sprite, so we add the floor then the sword sprite
                     case 4:
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SWORD") );
                         break;
+                    // a five means a spear sprite, so we add the floor then the spear sprite
                     case 5:
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SPEAR") );
                         break;
+                    // a six means a club sprite, so we add the floor then the club sprite
                     case 6:
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );

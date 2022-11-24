@@ -64,9 +64,9 @@ public class MapGenerator {
 
         // place three swords, spears, and clubs randomly around the map
         for ( int i = 0; i < 3; i++ ) {
-            map.set( this.reachable_location(), 4 );
-            map.set( this.reachable_location(), 5 );
-            map.set( this.reachable_location(), 6 );
+            map.set( this.reachable_location(), 4 ); // sword
+            map.set( this.reachable_location(), 5 ); // spear
+            map.set( this.reachable_location(), 6 ); // club
         }
 
         // convert the map from an array to a string
@@ -124,14 +124,21 @@ public class MapGenerator {
     }
 
     private int reachable_location() {
+        // we choose a random point
         int x = this.rand.nextInt( this.width );
         int y = this.rand.nextInt( this.height );
+
+        // we look for a path from player start to that point
         Path path = this.path_finder.findPath( null, this.width / 2, this.height / 2, x, y );
+
+        // if and when there is no path, we choose random points until we choose a spot where there is a path
         while ( path == null ) {
             x = this.rand.nextInt( this.width );
             y = this.rand.nextInt( this.height );
             path = this.path_finder.findPath( null, this.width / 2, this.height / 2, x, y );
         }
+
+        // we return a coordinate that's guaranteed to be reachable
         return ( y * this.height ) + x;
     }
 }
