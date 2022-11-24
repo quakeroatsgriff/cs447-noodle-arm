@@ -90,8 +90,13 @@ public class Server extends Thread {
         this.output_stream.flush();
     }
 
-    public void send_weapon_pickup_notice( String grid_ID ) {
-        this.output_stream.println( "PICKUP_WEAPON_START\n" + grid_ID + "\nPICKUP_WEAPON_END" );
+    public void send_server_weapon_pickup_notice( String grid_ID ) {
+        this.output_stream.println( "SERVER_WEAPON_PICKUP_START\n" + grid_ID + "\nSERVER_WEAPON_PICKUP_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_client_weapon_pickup_notice( String grid_ID ) {
+        this.output_stream.println( "CLIENT_WEAPON_PICKUP_START\n" + grid_ID + "\nCLIENT_WEAPON_PICKUP_END" );
         this.output_stream.flush();
     }
 

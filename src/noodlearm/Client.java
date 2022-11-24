@@ -74,6 +74,7 @@ public class Client extends Thread {
 
                 // we store next line
                 String next_line = this.input_stream.nextLine();
+                Integer weapon_grid_id;
 
                 // switch statement for matching different networking keywords
                 switch ( next_line ) {
@@ -107,10 +108,26 @@ public class Client extends Thread {
                         this.input_stream.nextLine();
                         break;
 
-                    case "PICKUP_WEAPON_START":
-                        Integer weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
+                    case "SERVER_WEAPON_PICKUP_START":
+                        weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
 
-                        lock_weapon_array = true;
+                        while ( lock_weapon_array )
+                            Thread.sleep( 5 );
+                        for ( WeaponSprite ws : this.na.weapons_on_ground ) {
+                            if ( ws.grid_ID == weapon_grid_id ) {
+                                na.server_player.pickupWeapon(ws);
+                                na.weapons_on_ground.remove(ws);
+                                break;
+                            }
+                        }
+                        this.input_stream.nextLine();
+                        break;
+
+                    case "CLIENT_WEAPON_PICKUP_START":
+                        weapon_grid_id = Integer.parseInt( this.input_stream.nextLine() );
+
+                        while ( lock_weapon_array )
+                            Thread.sleep( 5 );
                         for ( WeaponSprite ws : this.na.weapons_on_ground ) {
                             if ( ws.grid_ID == weapon_grid_id ) {
                                 na.client_player.pickupWeapon(ws);
@@ -118,7 +135,6 @@ public class Client extends Thread {
                                 break;
                             }
                         }
-                        lock_weapon_array = false;
                         this.input_stream.nextLine();
                         break;
 
@@ -128,6 +144,8 @@ public class Client extends Thread {
             }
         } catch ( IllegalStateException e ) { // occurs when kill_thread is called
             return;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         // clean up and print debug message

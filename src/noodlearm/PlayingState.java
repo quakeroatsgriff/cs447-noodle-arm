@@ -95,15 +95,9 @@ public class PlayingState extends BasicGameState {
         other_player.render(g);
         other_player.translate( world_coordinate_translation );
 
-        if ( na.client != null) {
-            while (na.network_identity.matches("Client") & na.client.lock_weapon_array) {
-                try {
-                    Thread.sleep( 1 );
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
+        // we lock the weapon array when editing on this thread to avoid concurrency issues
+        if ( na.client != null)
+            na.client.lock_weapon_array = true;
         // render weapons
         for(WeaponSprite ws : na.weapons_on_ground) {
             // adjust position relative to player, render and move back
@@ -111,6 +105,8 @@ public class PlayingState extends BasicGameState {
             ws.render(g);
             ws.translate( world_coordinate_translation );
         }
+        if ( na.client != null)
+            na.client.lock_weapon_array = false;
 
         // store position of player so we can move them back after render
         Vector old_postition = player.getPosition();
@@ -130,10 +126,12 @@ public class PlayingState extends BasicGameState {
         for ( WeaponSprite ws : na.weapons_on_ground ) {
             if ( Weapon.attackTimer( ws, na, delta ) )
                 break;
-            if ( Weapon.pickupWeapon( ws, na, na.server_player ) )
+            if ( Weapon.pickupWeapon(ws, na, na.server_player ) ) {
+                na.server.send_server_weapon_pickup_notice( Integer.toString( ws.grid_ID ) );
                 break;
+            }
             if ( Weapon.pickupWeapon( ws, na, na.client_player ) ) {
-                na.server.send_weapon_pickup_notice( Integer.toString( ws.grid_ID ) );
+                na.server.send_client_weapon_pickup_notice( Integer.toString( ws.grid_ID ) );
                 break;
             }
         }
