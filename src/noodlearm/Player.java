@@ -75,9 +75,9 @@ public class Player extends Entity {
             this.direction = 0;
         } else if ( grid_point_new.getID() == grid_point_old.getID() + 1 ) {
             this.direction = 1;
-        } else if ( grid_point_new.getID() == grid_point_old.getID() + 12 ) {
+        } else if ( grid_point_new.getID() == grid_point_old.getID() + 48 ) {
             this.direction = 2;
-        } else if ( grid_point_new.getID() == grid_point_old.getID() - 12 ) {
+        } else if ( grid_point_new.getID() == grid_point_old.getID() - 48 ) {
             this.direction = 3;
         }
         //Update player sprite direction

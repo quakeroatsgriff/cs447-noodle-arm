@@ -32,18 +32,6 @@ public class PlayingState extends BasicGameState {
         na.client = null;
 
         initTestLevel( na );
-        na.server.send_map( "1 1 1 1 1 1 1 1 1 1 1 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 2 0 0 0 0 0 0 3 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 1 1 1 1 1 1 1 1 1 1 1" );
 
         // simple echo server demonstration
 
@@ -172,7 +160,7 @@ public class PlayingState extends BasicGameState {
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.server_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.server_player.grid_ID + 12);
+                Grid new_location = na.grid.get(na.server_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
@@ -184,7 +172,7 @@ public class PlayingState extends BasicGameState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.server_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.server_player.grid_ID - 12);
+                Grid new_location = na.grid.get(na.server_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
                 if (na.server_player.move(new_location, old_location)) {
                     na.server.send_server_player_location(Integer.toString(new_location.getID()));
@@ -220,6 +208,14 @@ public class PlayingState extends BasicGameState {
     }
 
     private void initTestLevel(Noodlearm na){
+
+        // create a map generator, and generate a random map
+        MapGenerator map_generator = new MapGenerator( 48, 48 );
+        String map = map_generator.generate_map();
+
+        // send the map to the client
+        na.server.send_map( map );
+
         // Reset level by removing old grid
         na.grid.clear();
         // initialize variables
@@ -228,7 +224,7 @@ public class PlayingState extends BasicGameState {
 
         // open a new scanner
         try {
-            sc = new Scanner( new File( "src/noodlearm/res/grids/level_one.txt" ) );
+            sc = new Scanner( map );
             // split file by line
             sc.useDelimiter( "\n" );
         } catch( Exception CannotOpenFile ) {
@@ -253,6 +249,21 @@ public class PlayingState extends BasicGameState {
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.client_player = new Player( na.grid.get( ID_counter++ ) );
                         break;
+                    // a four means a sword sprite, so we add the floor then the sword sprite
+                    case 4:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SWORD") );
+                        break;
+                    // a five means a spear sprite, so we add the floor then the spear sprite
+                    case 5:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SPEAR") );
+                        break;
+                    // a six means a club sprite, so we add the floor then the club sprite
+                    case 6:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );
+                        break;
                     // regular tile
                     default:
                         na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
@@ -262,10 +273,6 @@ public class PlayingState extends BasicGameState {
             x = 0; y++;
         }
         sc.close();
-
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(33), "SWORD"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(45), "CLUB"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(57), "SPEAR"));
     }
     
 }

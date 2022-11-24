@@ -36,7 +36,7 @@ public class ClientPlayingState extends PlayingState {
             }
         }
 
-        initTestLevel( na);
+        initTestLevel( na );
 
     }
 
@@ -89,7 +89,7 @@ public class ClientPlayingState extends PlayingState {
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
             if(na.client_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.client_player.grid_ID + 12);
+                Grid new_location = na.grid.get(na.client_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
                 return;
@@ -99,7 +99,7 @@ public class ClientPlayingState extends PlayingState {
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
             //Move boulder to right if it's there
             if(na.client_player.getRemainingTime() <= 0){
-                Grid new_location = na.grid.get(na.client_player.grid_ID - 12);
+                Grid new_location = na.grid.get(na.client_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
                 na.client.send_move_request( Integer.toString( old_location.getID() ), Integer.toString( new_location.getID() ) );
                 return;
@@ -162,6 +162,21 @@ public class ClientPlayingState extends PlayingState {
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.client_player = new Player( na.grid.get( ID_counter++ ) );
                         break;
+                    // a four means a sword sprite, so we add the floor then the sword sprite
+                    case 4:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SWORD") );
+                        break;
+                    // a five means a spear sprite, so we add the floor then the spear sprite
+                    case 5:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SPEAR") );
+                        break;
+                    // a six means a club sprite, so we add the floor then the club sprite
+                    case 6:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );
+                        break;
                     // regular tile
                     default:
                         na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
@@ -171,10 +186,6 @@ public class ClientPlayingState extends PlayingState {
             x = 0; y++;
         }
         sc.close();
-
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(33), "SWORD"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(45), "CLUB"));
-        na.weapons_on_ground.add(new WeaponSprite(na.grid.get(57), "SPEAR"));
     }
 
 }
