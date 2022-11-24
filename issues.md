@@ -10,9 +10,10 @@
 - **[8]** Set up players picking up weapons, store in inventory, and light attack.
 - **[9]** Set up dumb client networking model. Server handles update method. Clients handle render method.
 - **[10]** Set up characters for both server and client
+- **[11]** Set up screen scrolling
 
 ## Open Issues
 
-- **[11]** Set up players picking up weapons, store in inventory, and light attack over network.
-- **[12]** Add enemies that pursue and attack the players
-- **[13]** Setup procedurally generated map
+- **[12]** Set up players picking up weapons, store in inventory, and light attack over network.
+- **[13]** Add enemies that pursue and attack the players
+- **[14]** Setup procedurally generated map
