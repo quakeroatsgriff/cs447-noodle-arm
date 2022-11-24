@@ -74,20 +74,17 @@ public class Player extends Entity {
         //Update player sprite direction
         // changePlayerDirection(direction);
         switch(direction){
-            //Left
             case Noodlearm.LEFT:
                 dir_x=-1.0f; dir_y=0.f;
                 break;
-            //Right
-            case 1:
+            case Noodlearm.RIGHT:
                 dir_x=1.0f;  dir_y=0.0f;
                 break;
             //Down (Forward)
-            case 2:
+            case Noodlearm.DOWN:
                 dir_x=0.0f;  dir_y=1.0f;
                 break;
-            //Up
-            case 3:
+            case Noodlearm.UP:
                 dir_x=0.0f;  dir_y=-1.0f;
                 break;
         }
