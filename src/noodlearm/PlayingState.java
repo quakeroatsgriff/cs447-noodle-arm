@@ -196,6 +196,7 @@ public class PlayingState extends BasicGameState {
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
             if(na.server_player.getRemainingTime() <= 0){
+                na.server.send_light_attack();
                 na.server_player.lightAttack(na);
                 return; 
             }
@@ -204,6 +205,7 @@ public class PlayingState extends BasicGameState {
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
             if(na.server_player.getRemainingTime() <= 0){
+                na.server.send_light_attack();
                 na.server_player.lightAttack(na);
                 return; 
             };

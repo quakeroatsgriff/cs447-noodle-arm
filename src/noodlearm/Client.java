@@ -138,6 +138,11 @@ public class Client extends Thread {
                         this.input_stream.nextLine();
                         break;
 
+                    case "PLAYER_LIGHT_ATTACK_START":
+                        na.server_player.lightAttack( na );
+                        this.input_stream.nextLine();
+                        break;
+
                     default:
                         System.out.println( "From Server: " + this.input_stream.nextLine() );
                 }
@@ -157,6 +162,11 @@ public class Client extends Thread {
     public void send_move_request( String old_location, String new_location ) {
         // we write the message to the output stream
         this.output_stream.println( "PLAYER_MOVE_START\n" + old_location + "\n" + new_location + "\nPLAYER_MOVE_END" );
+        this.output_stream.flush();
+    }
+
+    public void send_light_attack() {
+        this.output_stream.println( "PLAYER_LIGHT_ATTACK_START\nPLAYER_LIGHT_ATTACK_END" );
         this.output_stream.flush();
     }
 

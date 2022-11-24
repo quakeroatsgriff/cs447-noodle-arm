@@ -1,8 +1,6 @@
 package noodlearm;
 
-import jig.Vector;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
@@ -32,7 +30,7 @@ public class ClientPlayingState extends PlayingState {
         // if they haven't we sleep for one second and check again
         while ( na.client.current_map.equals( "" ) ) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep( 200 );
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -53,6 +51,12 @@ public class ClientPlayingState extends PlayingState {
         if ( na.client.current_client_player_location != na.client_player.grid_ID & na.client.current_client_player_location != -1 ) {
             na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID));
         }
+
+        for ( WeaponSprite ws : na.weapons_on_ground ) {
+            if ( Weapon.attackTimer( ws, na, delta ) )
+                break;
+        }
+
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
         checkInput( input, na );
@@ -105,6 +109,7 @@ public class ClientPlayingState extends PlayingState {
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
             if(na.client_player.getRemainingTime() <= 0){
+                na.client.send_light_attack();
                 na.client_player.lightAttack(na);
                 return;
             }
@@ -113,6 +118,7 @@ public class ClientPlayingState extends PlayingState {
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
             if(na.client_player.getRemainingTime() <= 0){
+                na.client.send_light_attack();
                 na.client_player.lightAttack(na);
                 return;
             };
