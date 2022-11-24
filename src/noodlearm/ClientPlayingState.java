@@ -36,7 +36,7 @@ public class ClientPlayingState extends PlayingState {
             }
         }
 
-        initTestLevel( na);
+        initTestLevel( na );
 
     }
 

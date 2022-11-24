@@ -32,18 +32,6 @@ public class PlayingState extends BasicGameState {
         na.client = null;
 
         initTestLevel( na );
-        na.server.send_map( "1 1 1 1 1 1 1 1 1 1 1 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 2 0 0 0 0 0 0 3 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 0 0 0 0 0 0 0 0 0 0 1\n" +
-                            "1 1 1 1 1 1 1 1 1 1 1 1" );
 
         // simple echo server demonstration
 
@@ -220,6 +208,11 @@ public class PlayingState extends BasicGameState {
     }
 
     private void initTestLevel(Noodlearm na){
+
+        MapGenerator map_generator = new MapGenerator( 12, 12 );
+        String map = map_generator.generate_map();
+        na.server.send_map( map );
+
         // Reset level by removing old grid
         na.grid.clear();
         // initialize variables
@@ -228,7 +221,7 @@ public class PlayingState extends BasicGameState {
 
         // open a new scanner
         try {
-            sc = new Scanner( new File( "src/noodlearm/res/grids/level_one.txt" ) );
+            sc = new Scanner( map );
             // split file by line
             sc.useDelimiter( "\n" );
         } catch( Exception CannotOpenFile ) {
