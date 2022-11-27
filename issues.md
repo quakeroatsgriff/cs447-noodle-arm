@@ -18,3 +18,4 @@
 
 - **[13]** Add enemies that pursue and attack the players
 - **[15]** Fix bug where players can't see other player's currently equipped weapon
+- **[16]** Add new animations and sprites for player
