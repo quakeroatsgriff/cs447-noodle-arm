@@ -27,18 +27,22 @@ public class Noodlearm extends StateBasedGame{
     Server server;
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
+    public ArrayList<Enemy> enemies;
     public Player server_player;
     public Player client_player;
     public String network_identity;
     //Resource strings
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
-    public static final String BLANK_RES = "noodlearm/res/img/blank.png";
-    public static final String WALL_RES = "noodlearm/res/img/wall.png";
-    public static final String SWORD_RES = "noodlearm/res/img/sword.png";
-    public static final String CLUB_RES = "noodlearm/res/img/club.png";
-    public static final String SPEAR_RES = "noodlearm/res/img/spear.png";
-    public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/knight.png";
+    public static final String BLANK_RES = "noodlearm/res/img/world/blank.png";
+    public static final String WALL_RES = "noodlearm/res/img/world/wall.png";
+    public static final String HIGHLIGHT_RES = "noodlearm/res/img/world/path-highlight.png";
+    public static final String SWORD_RES = "noodlearm/res/img/weapons/sword.png";
+    public static final String CLUB_RES = "noodlearm/res/img/weapons/club.png";
+    public static final String SPEAR_RES = "noodlearm/res/img/weapons/spear.png";
+    public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/player/knight.png";
+    public static final String HOUND_RES = "noodlearm/res/img/enemies/hound.png";
+    public static final String SKELETON_RES = "noodlearm/res/img/enemies/skeleton.png";
 
 
     /*
@@ -52,6 +56,7 @@ public class Noodlearm extends StateBasedGame{
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
         weapons_on_ground = new ArrayList<WeaponSprite>(1);
+        enemies = new ArrayList<Enemy>(10);
         network_identity = "Server";
     }
 
@@ -72,6 +77,10 @@ public class Noodlearm extends StateBasedGame{
         ResourceManager.loadImage(SPEAR_RES);
         ResourceManager.loadImage(CLUB_RES);
         ResourceManager.loadImage(KNIGHT_FORWARD_RES);
+        ResourceManager.loadImage(HOUND_RES);
+        ResourceManager.loadImage(SKELETON_RES);
+        ResourceManager.loadImage(HIGHLIGHT_RES);
+
 
     }
 

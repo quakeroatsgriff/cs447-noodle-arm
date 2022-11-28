@@ -27,6 +27,10 @@ public class Weapon{
             case "CLUB":
                 this.createWeapon(5,750,1, -45, Noodlearm.CLUB_RES);
                 break;
+            case "SKELETON":
+            case "HOUND":
+                this.createWeapon(2, 400, 1, 0, null);
+                break;
         }
 
     }

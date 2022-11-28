@@ -56,6 +56,17 @@ public class ClientPlayingState extends PlayingState {
             if ( Weapon.attackTimer( ws, na, delta ) )
                 break;
         }
+        //Iterate through each enemy and determine if they need to be moved
+        if(!na.client.enemies.isEmpty()){
+            for(int i=0; i < na.enemies.size(); i++) {
+                Enemy client_enemy = na.client.enemies.get(i);
+                Enemy na_enemy = na.enemies.get(i);
+                na_enemy.timeUpdate(na, delta);
+                if(na_enemy.grid_ID != client_enemy.grid_ID){
+                    na_enemy.move(na.grid.get(client_enemy.grid_ID), na.grid.get(na_enemy.grid_ID), client_enemy.direction);
+                }
+            }
+        }
 
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
@@ -68,7 +79,7 @@ public class ClientPlayingState extends PlayingState {
 
         //Player moves left
         if(input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
-            //If the player is still frozen from moving the boulder
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID - 1);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
@@ -78,7 +89,7 @@ public class ClientPlayingState extends PlayingState {
         }
         //Player moves Right
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
-            //Move boulder to right if it's there
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID + 1);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
@@ -88,6 +99,7 @@ public class ClientPlayingState extends PlayingState {
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
@@ -97,7 +109,7 @@ public class ClientPlayingState extends PlayingState {
         }
         //Player moves Up
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
-            //Move boulder to right if it's there
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.client_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.client_player.grid_ID);
@@ -105,9 +117,9 @@ public class ClientPlayingState extends PlayingState {
                 return;
             }
         }
-        //TODO
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 na.client.send_light_attack();
                 na.client_player.lightAttack(na);
@@ -117,15 +129,16 @@ public class ClientPlayingState extends PlayingState {
         //TODO
         //Player uses heavy attack (Y on controller)
         if(input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) || input.isButtonPressed(3,Input.ANY_CONTROLLER)){
+            //If the player is no longer doing an action
             if(na.client_player.getRemainingTime() <= 0){
                 na.client.send_light_attack();
                 na.client_player.lightAttack(na);
                 return;
             };
         }
-        //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
+            //Only switch if the player has at least 1 weapon
             if ( !na.client_player.weapon_inv.isEmpty() )
                 na.client_player.changeWeapon();
             return;
@@ -137,7 +150,7 @@ public class ClientPlayingState extends PlayingState {
         na.grid.clear();
         // initialize variables
         Scanner sc = null;
-        int ID_counter = 0, x = 0, y = 0;
+        int ID_counter = 0, x = 0, y = 0, enemy_ID_counter = 0;
 
         // open a new scanner
         sc = new Scanner( na.client.current_map );
@@ -177,6 +190,15 @@ public class ClientPlayingState extends PlayingState {
                         na.grid.add( new Grid( 0, x++, y, ID_counter ) );
                         na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );
                         break;
+                    case 7:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.enemies.add( new Enemy(na.grid.get( ID_counter++ ), "HOUND", enemy_ID_counter++));
+                        break;
+                    // an eight means an enemy skeleton sprite, so we add the floor then the skeleton sprite
+                    case 8:
+                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
+                        na.enemies.add( new Enemy(na.grid.get( ID_counter++ ), "SKELETON", enemy_ID_counter++));
+                        break;
                     // regular tile
                     default:
                         na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
@@ -186,6 +208,7 @@ public class ClientPlayingState extends PlayingState {
             x = 0; y++;
         }
         sc.close();
+        na.client.enemies=na.enemies;
     }
 
 }

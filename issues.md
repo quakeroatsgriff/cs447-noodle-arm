@@ -12,9 +12,9 @@
 - **[10]** Set up characters for both server and client
 - **[11]** Set up screen scrolling
 - **[12]** Set up players picking up weapons, store in inventory, and light attack over network.
-- **[14]** Setup procedurally generated map
+- **[13]** Add enemies that pursue the players
+- **[14]** Set up procedurally generated map
 
 ## Open Issues
-
-- **[13]** Add enemies that pursue and attack the players
-- **[15]** Fix bug where players can't see other player's currently equipped weapon
+- **[15]** Set up enemies attacking and enemies and players dealing damage 
+- **[17]** Fix bug where players can't see other player's currently equipped weapon
