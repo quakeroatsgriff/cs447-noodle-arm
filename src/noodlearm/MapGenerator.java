@@ -68,6 +68,11 @@ public class MapGenerator {
             map.set( this.reachable_location(), 5 ); // spear
             map.set( this.reachable_location(), 6 ); // club
         }
+        // place five hound enemies and five skeleton enemies randomly around the map
+        for ( int i = 0; i < 3; i++ ) {
+            map.set( this.reachable_location(), 7 ); // hound
+            map.set( this.reachable_location(), 8 ); // skeleton
+        }
 
         // convert the map from an array to a string
         StringBuilder string_builder = new StringBuilder();

@@ -10,6 +10,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class PlayingState extends BasicGameState {
     @Override
@@ -77,7 +78,11 @@ public class PlayingState extends BasicGameState {
             grid_cell.render(g);
             grid_cell.translate( world_coordinate_translation );
         }
-
+        for(Enemy enemy : na.enemies){
+            enemy.translate(relative_coordinate_translation);
+            enemy.render(g);
+            enemy.translate( world_coordinate_translation );
+        }
         // adjust position relative to player, render and move back
         other_player.translate( relative_coordinate_translation );
         other_player.render(g);
@@ -123,7 +128,38 @@ public class PlayingState extends BasicGameState {
                 break;
             }
         }
-
+        for(Enemy enemy : na.enemies)   {
+            enemy.timeUpdate(na, delta);
+            //Unhighlight any path tiles in order to prevent the same tile being lit up multiple times in a row.
+            Stack<Integer> move_order= (Stack<Integer>)enemy.move_order.clone();
+            while(!move_order.empty()){
+                Grid grid_point = na.grid.get(move_order.pop());
+                // grid_point.unhighlight(na,highlight_flag);
+            }
+            //Enemy will move or attack if the movement timer is up
+            if(enemy.getRemainingTime() <= 0){
+                //If an enemy is within attack range of the targeted player, charge up attack
+                if(enemy.withinAttackRange(na.server_player))  {
+                    
+                    break;
+                }
+                else if(enemy.withinAttackRange(na.client_player)){
+                    
+                    break;
+                }
+                else{
+                    na.server.send_server_enemy_ID(Integer.toString(enemy.ID));
+                    //Determine the path the enemy should move in and also send the outcome to the client
+                    enemy.updateMoveOrder(na);
+                    int next_grid_ID=enemy.getNextMove(na);
+                    int direction=enemy.getMoveDirection(next_grid_ID);
+                    na.server.send_server_enemy_direction(Integer.toString(direction));
+                    enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), direction);    
+                    na.server.send_server_enemy_location(Integer.toString(next_grid_ID));
+                }
+            }
+            
+        }
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
         checkInput(input, na);
@@ -135,7 +171,7 @@ public class PlayingState extends BasicGameState {
 
         //Player moves left
         if (input.isKeyDown(Input.KEY_A) || input.isControllerLeft(Input.ANY_CONTROLLER)){
-            //If the player is still frozen from moving the boulder
+            //If the player is no longer doing an action
             if (na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
@@ -147,7 +183,7 @@ public class PlayingState extends BasicGameState {
         }
         //Player moves Right
         if(input.isKeyDown(Input.KEY_D) || input.isControllerRight(Input.ANY_CONTROLLER)){
-            //Move boulder to right if it's there
+            //If the player is no longer doing an action
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 1);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
@@ -159,6 +195,7 @@ public class PlayingState extends BasicGameState {
         }
         //Player moves Down
         if(input.isKeyDown(Input.KEY_S) || input.isControllerDown(Input.ANY_CONTROLLER)){
+            //If the player is no longer doing an action
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID + 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
@@ -170,7 +207,7 @@ public class PlayingState extends BasicGameState {
         }
         //Player moves Up
         if(input.isKeyDown(Input.KEY_W) || input.isControllerUp(Input.ANY_CONTROLLER)){
-            //Move boulder to right if it's there
+            //If the player is no longer doing an action
             if(na.server_player.getRemainingTime() <= 0){
                 Grid new_location = na.grid.get(na.server_player.grid_ID - 48);
                 Grid old_location = na.grid.get(na.server_player.grid_ID);
@@ -180,7 +217,6 @@ public class PlayingState extends BasicGameState {
                 return;
             }
         }
-        //TODO
         //Player uses light attack (X on controller)
         if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || input.isButton3Pressed(Input.ANY_CONTROLLER)){
             if(na.server_player.getRemainingTime() <= 0){
@@ -198,9 +234,9 @@ public class PlayingState extends BasicGameState {
                 return; 
             };
         }
-        //TODOs
         //Player switches weapons (B on controller)
         if(input.isKeyDown(Input.KEY_C) || input.isButton2Pressed(Input.ANY_CONTROLLER)){
+            //Only switch if the player has at least 1 weapon
             if ( !na.server_player.weapon_inv.isEmpty() )
                 na.server_player.changeWeapon();
             return;
@@ -220,7 +256,7 @@ public class PlayingState extends BasicGameState {
         na.grid.clear();
         // initialize variables
         Scanner sc = null;
-        int ID_counter = 0, x = 0, y = 0;
+        int grid_ID_counter = 0, x = 0, y = 0, enemy_ID_counter=0;
 
         // open a new scanner
         try {
@@ -241,32 +277,42 @@ public class PlayingState extends BasicGameState {
                 switch ( tile_type ) {
                     // a two means the server's player, so we add floor tile then player
                     case 2:
-                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.server_player = new Player( na.grid.get( ID_counter++ ) );
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.server_player = new Player( na.grid.get( grid_ID_counter++ ) );
                         break;
                     // a three means the client's player, so we add floor tile then player
                     case 3:
-                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.client_player = new Player( na.grid.get( ID_counter++ ) );
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.client_player = new Player( na.grid.get( grid_ID_counter++ ) );
                         break;
                     // a four means a sword sprite, so we add the floor then the sword sprite
                     case 4:
-                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SWORD") );
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( grid_ID_counter++ ), "SWORD") );
                         break;
                     // a five means a spear sprite, so we add the floor then the spear sprite
                     case 5:
-                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "SPEAR") );
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( grid_ID_counter++ ), "SPEAR") );
                         break;
                     // a six means a club sprite, so we add the floor then the club sprite
                     case 6:
-                        na.grid.add( new Grid( 0, x++, y, ID_counter ) );
-                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( ID_counter++ ), "CLUB") );
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.weapons_on_ground.add( new WeaponSprite( na.grid.get( grid_ID_counter++ ), "CLUB") );
+                        break;
+                    // a seven means an enemy hound sprite, so we add the floor then the hound sprite
+                    case 7:
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.enemies.add( new Enemy(na.grid.get( grid_ID_counter++ ), "HOUND", enemy_ID_counter++));
+                        break;
+                    // an eight means an enemy skeleton sprite, so we add the floor then the skeleton sprite
+                    case 8:
+                        na.grid.add( new Grid( 0, x++, y, grid_ID_counter ) );
+                        na.enemies.add( new Enemy(na.grid.get( grid_ID_counter++ ), "SKELETON", enemy_ID_counter++));
                         break;
                     // regular tile
                     default:
-                        na.grid.add( new Grid( tile_type, x++, y, ID_counter++ ) );
+                        na.grid.add( new Grid( tile_type, x++, y, grid_ID_counter++ ) );
                 }
             }
             // reset column and increase row

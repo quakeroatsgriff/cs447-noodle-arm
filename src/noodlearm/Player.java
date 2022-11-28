@@ -5,7 +5,7 @@ import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 public class Player extends Entity {
-    public int lives_left;
+    public int hit_points;
     public int grid_ID;
     private int action_timer;   //for movement and attacking
     private int sprite_update_timer;
@@ -21,7 +21,7 @@ public class Player extends Entity {
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
-        this.lives_left=3;
+        this.hit_points=3;
         this.action_timer=0;
         this.weapon_switch_timer=0;
         this.walking=false;
@@ -72,13 +72,13 @@ public class Player extends Entity {
         float dir_x=1.0f,dir_y=1.0f;
 
         if ( grid_point_new.getID() == grid_point_old.getID() - 1 ) {
-            this.direction = 0;
+            this.direction = Noodlearm.LEFT;
         } else if ( grid_point_new.getID() == grid_point_old.getID() + 1 ) {
-            this.direction = 1;
+            this.direction = Noodlearm.RIGHT;
         } else if ( grid_point_new.getID() == grid_point_old.getID() + 48 ) {
-            this.direction = 2;
+            this.direction = Noodlearm.DOWN;
         } else if ( grid_point_new.getID() == grid_point_old.getID() - 48 ) {
-            this.direction = 3;
+            this.direction = Noodlearm.UP;
         }
         //Update player sprite direction
         // changePlayerDirection(direction);

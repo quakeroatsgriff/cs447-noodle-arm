@@ -108,7 +108,19 @@ public class Server extends Thread {
         this.output_stream.println( "PLAYER_LIGHT_ATTACK_START\nPLAYER_LIGHT_ATTACK_END" );
         this.output_stream.flush();
     }
-
+    //A preliminary message to inform the client which specific enemy in the arraylist is being referenced
+    public void send_server_enemy_ID( String enemy_ID ){
+        this.output_stream.println( "SERVER_ENEMY_ID_START\n" + enemy_ID + "\nSERVER_ENEMY_ID_END" );
+        this.output_stream.flush();
+    }
+    public void send_server_enemy_direction( String direction ){
+        this.output_stream.println( "SERVER_ENEMY_DIRECTION_START\n" + direction + "\nSERVER_ENEMY_DIRECTION_END" );
+        this.output_stream.flush();
+    }
+    public void send_server_enemy_location( String location ){
+        this.output_stream.println( "SERVER_ENEMY_LOC_START\n" + location + "\nSERVER_ENEMY_LOC_END" );
+        this.output_stream.flush();
+    }
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();
