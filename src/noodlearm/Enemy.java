@@ -12,6 +12,7 @@ public class Enemy extends Entity {
     public int grid_ID;
     private int action_timer;   //for movement and attacking
     private int sprite_update_timer;
+    private int charge_up_timer;
     private boolean walking;
     private boolean attacking;
     public String type;
@@ -26,6 +27,7 @@ public class Enemy extends Entity {
         this.setScale((float) 0.125);
         this.hit_points=1;
         this.action_timer=0;
+        this.charge_up_timer=0;
         this.ID = ID;
         this.walking=false;
         this.attacking=false;
@@ -36,6 +38,7 @@ public class Enemy extends Entity {
         this.player_last_known_loc=-1;
         this.type=type;
         grid_point.setEntity(type);
+        grid_point.walkable = false;
         this.weapon = new Weapon(type);
         switch(type){
             case "HOUND":
@@ -82,6 +85,7 @@ public class Enemy extends Entity {
         grid_point_old.walkable=true;
         grid_point_new.walkable=false;
         this.grid_ID = grid_point_new.getID();
+        this.direction=direction;
         //Gets the direction from the old to the new grid 'point'
         this.velocity = new Vector(dir_x * (float)(64.0f / 250.0f), dir_y * (float)(64.0f / 250.0f));
          //Set movement timer to 250 ms
@@ -146,6 +150,10 @@ public class Enemy extends Entity {
      * @return grid ID to move to
      */
     public int getNextMove(Noodlearm na){
+        //Base case, no movement in stack
+        if(this.move_order == null || this.move_order.isEmpty()){
+            return -1;
+        }
         return (this.move_order.pop());
     }
     /**
@@ -232,7 +240,51 @@ public class Enemy extends Entity {
         return (this.grid_ID-ar == player.grid_ID || this.grid_ID+ar == player.grid_ID ||
         this.grid_ID-(48*ar) == player.grid_ID || this.grid_ID+(48*ar) == player.grid_ID);
     }
+    /**
+     * Get direction to face in when within attack range of aplyaer
+     * @param player
+     * @return int direction
+     */
+    public int getDirectionToPlayer(Player player){
+        //Enemy attack range
+        int ar = this.weapon.range;
+        
+        if(this.grid_ID-ar == player.grid_ID)               return Noodlearm.LEFT;
+        else if(this.grid_ID+ar == player.grid_ID)          return Noodlearm.RIGHT;
+        else if(this.grid_ID-(48*ar) == player.grid_ID)     return Noodlearm.UP;
+        else if(this.grid_ID+(48*ar) == player.grid_ID)     return Noodlearm.DOWN;
+        return -1;
+    }
+    /**
+    * Updates the timer to charge up an attack and determine if the attack is ready
+    * @param delta
+    * @return true if ready to attack, false if not ready
+    */
+    public boolean chargeUpAttack(int delta){
+        this.charge_up_timer+=delta;
+        return (this.charge_up_timer >= this.weapon.speed);
+    }
+    
+    /**
+     * Do attack with weapon stats
+     * @returns True if succesful attack, false if not successful
+     */
+    public boolean attack(Noodlearm na){
+        //Base case, player has no weapon
+        this.attacking=true;
+        // this.action_timer=this.weapon.speed;
+        //Add attacking weapon into world
+        na.weapons_on_ground.add(new WeaponSprite(this, this.direction, weapon));
+        this.resetChargeUp();
+        return true;
+    }
 
+    /*
+     * Reset timer on charge up timer. Indicates that the enemy is no longer in range of attacking
+     */
+    public void resetChargeUp(){
+        this.charge_up_timer=0;
+    }
     /**
      * @return movement timer
      */

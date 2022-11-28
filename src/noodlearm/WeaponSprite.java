@@ -14,6 +14,7 @@ public class WeaponSprite extends Entity{
     public int attacking_timer;
     private int direction;
     private boolean halfway_flag;
+    private boolean dealt_damage;
     //Constructor for a weapon laying on the ground
     public WeaponSprite(Grid grid_point, String type){
         super(grid_point.getX(), grid_point.getY());
@@ -24,7 +25,7 @@ public class WeaponSprite extends Entity{
         addImageWithBoundingBox(ResourceManager.getImage(weapon.texture));
     }
 
-    //Constructor for a weapon that is attacking
+    //Constructor for a weapon that is attacking from a player
     public WeaponSprite(Player player, int direction, Weapon weapon){
         super(player.getX(), player.getY());
         this.addImageWithBoundingBox(ResourceManager.getImage(weapon.texture));
@@ -35,6 +36,7 @@ public class WeaponSprite extends Entity{
         this.attacking_timer=weapon.speed;
         this.direction=direction;
         this.halfway_flag=false;
+        this.dealt_damage=false;
         //Determine which direction to attack in for swords or clubs
         if(weapon.type=="CLUB" || weapon.type=="SWORD"){
             switch(direction){
@@ -63,6 +65,46 @@ public class WeaponSprite extends Entity{
         }
     }
     
+    //Constructor for a weapon that is attacking from an enemy
+    public WeaponSprite(Enemy enemy, int direction, Weapon weapon){
+        super(enemy.getX(), enemy.getY());
+        this.addImageWithBoundingBox(ResourceManager.getImage(weapon.texture));
+        this.setScale((float) 0.125);
+        this.weapon=weapon;
+        this.grid_ID = enemy.grid_ID;
+        this.attacking=true;
+        this.attacking_timer=weapon.speed;
+        this.direction=direction;
+        this.halfway_flag=false;
+        this.dealt_damage=false;
+        //Determine which direction to attack in for swords or clubs
+        if(weapon.type=="HOUND" || weapon.type=="SKELETON"){
+            switch(direction){
+                case Noodlearm.LEFT:
+                    //The angle in degres the weapon should end on when turning
+                    this.setRotation(weapon.rotation_amount + 135);
+                    this.setX(this.getX()-48);
+                    this.setY(this.getY()+32);
+                    break;
+                case Noodlearm.RIGHT:
+                    this.setRotation(weapon.rotation_amount - 45);
+                    this.setX(this.getX()+48);
+                    this.setY(this.getY()-32);
+                    break;
+                case Noodlearm.DOWN:
+                    this.setRotation(weapon.rotation_amount + 45);
+                    this.setX(this.getX()+32);
+                    this.setY(this.getY()+64);
+                    break;
+                case Noodlearm.UP:
+                    this.setRotation(weapon.rotation_amount + 225);
+                    this.setX(this.getX()-32);
+                    this.setY(this.getY()-64);
+                    break;
+            }
+        }
+    }
+
     public void update(Noodlearm na, int delta){
         this.attacking_timer -= delta;
         if(this.weapon.type == "SPEAR")     updateSpear(delta);
@@ -141,5 +183,36 @@ public class WeaponSprite extends Entity{
                     break;
             }
         }
+    }
+
+    /**
+     * Deals damage to the player standing on the weapon sprite tile
+     * @param na
+     * @param player
+     * @return
+     */
+    public boolean dealDamage(Noodlearm na, Player player){
+        //Weapons just laying on the ground should not deal damage.
+        if(!this.attacking)      return false;
+        if(this.dealt_damage)   return false;
+        player.hit_points -= this.weapon.damage;
+        //Only deal damage once per weapon sprite
+        this.dealt_damage = true;
+        return true;
+    }
+    /**
+     * Deals damage to the enemy standing on the weapon sprite tile
+     * @param na
+     * @param enemy
+     * @return
+     */
+    public boolean dealDamage(Noodlearm na, Enemy enemy){
+        //Weapons just laying on the ground should not deal damage.
+        if(!this.attacking)      return false;
+        if(this.dealt_damage)   return false;
+        enemy.hit_points -= this.weapon.damage;
+        //Only deal damage once per weapon sprite
+        this.dealt_damage = true;
+        return true;
     }
 }

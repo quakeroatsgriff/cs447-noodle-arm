@@ -36,6 +36,7 @@ public class Player extends Entity {
         //this.direction=Pushover.PLAYER_F_RES;
         this.velocity=new Vector(0,0);
         grid_point.setEntity("Player");
+        grid_point.walkable=false;
         // addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.PLAYER_F_RES));
         addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
 
@@ -102,6 +103,8 @@ public class Player extends Entity {
         if(this.action_timer > 0)     return false;
         grid_point_old.setEntity("");
         grid_point_new.setEntity("Player");
+        grid_point_old.walkable=true;
+        grid_point_new.walkable=false;
         this.grid_ID = grid_point_new.getID();
         //Gets the direction from the old to the new grid 'point'
         this.velocity = new Vector(dir_x * (float)(64.0f / 200.0f), dir_y * (float)(64.0f / 200.0f));
