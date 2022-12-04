@@ -18,5 +18,6 @@
 ## Open Issues
 
 - **[13]** Add enemies that pursue and attack the players
-- **[15]** Fix bug where players can't see other player's currently equipped weapon
-
+- **[15]** Fix bug where players can't see other player's currently equipped weapon 
+- **[17]** Fix bug where players can't see other player's currently equipped weapon
+- **[18]** Set up enemies attacking and enemies and players dealing damage

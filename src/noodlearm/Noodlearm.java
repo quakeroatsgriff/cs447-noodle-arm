@@ -27,6 +27,7 @@ public class Noodlearm extends StateBasedGame{
     Server server;
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
+    public ArrayList<Enemy> enemies;
     public Player server_player;
     public Player client_player;
     public String network_identity;
@@ -46,6 +47,10 @@ public class Noodlearm extends StateBasedGame{
     public static final String KNIGHT_LEFT_FACE = "noodlearm/res/img/knight_left.png";
     public static final String KNIGHT_RIGHT_WALK_ANIMATION = "noodlearm/res/img/knight_right_walk.png";
     public static final String KNIGHT_RIGHT_FACE = "noodlearm/res/img/knight_right.png";
+    public static final String HIGHLIGHT_RES = "noodlearm/res/img/world/path-highlight.png";
+    public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/player/knight.png";
+    public static final String HOUND_RES = "noodlearm/res/img/enemies/hound.png";
+    public static final String SKELETON_RES = "noodlearm/res/img/enemies/skeleton.png";
 
     /*
     * Creates the Noodle Arm game frame.
@@ -58,6 +63,7 @@ public class Noodlearm extends StateBasedGame{
         Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);
         grid = new ArrayList<Grid>(50);
         weapons_on_ground = new ArrayList<WeaponSprite>(1);
+        enemies = new ArrayList<Enemy>(10);
         network_identity = "Server";
     }
 
@@ -85,6 +91,10 @@ public class Noodlearm extends StateBasedGame{
         ResourceManager.loadImage(KNIGHT_LEFT_FACE);
         ResourceManager.loadImage(KNIGHT_RIGHT_WALK_ANIMATION);
         ResourceManager.loadImage(KNIGHT_RIGHT_FACE);
+        ResourceManager.loadImage(KNIGHT_FORWARD_RES);
+        ResourceManager.loadImage(HOUND_RES);
+        ResourceManager.loadImage(SKELETON_RES);
+        ResourceManager.loadImage(HIGHLIGHT_RES);
     }
 
     public static void main(String[] args){

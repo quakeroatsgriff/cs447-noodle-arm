@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /*
@@ -17,6 +18,7 @@ public class Client extends Thread {
     public String current_map = "";
     public Integer current_server_player_location = -1;
     public Integer current_client_player_location = -1;
+    private Integer enemy_ID = 0, enemy_direction=-1;
     public boolean lock_weapon_array = false;
 
     // socket for communicating to server
@@ -25,12 +27,13 @@ public class Client extends Thread {
     PrintWriter output_stream;
     // input_stream for recieving information from server
     Scanner input_stream;
+    ArrayList<Enemy> enemies;
     Noodlearm na;
 
     public Client( Noodlearm na ) {
 
         this.na = na;
-
+        this.enemies = new ArrayList<Enemy>(10);
         // here we loop while we're attempting to connect to a server
         boolean scanning = true;
         while ( scanning ) {
@@ -75,7 +78,6 @@ public class Client extends Thread {
                 // we store next line
                 String next_line = this.input_stream.nextLine();
                 Integer weapon_grid_id;
-
                 // switch statement for matching different networking keywords
                 switch ( next_line ) {
 
@@ -142,7 +144,31 @@ public class Client extends Thread {
                         na.server_player.lightAttack( na );
                         this.input_stream.nextLine();
                         break;
-
+                    //Preliminary message for designated which enemy in the arraylist is being referenced
+                    case "SERVER_ENEMY_ID_START":
+                        enemy_ID = Integer.parseInt(this.input_stream.nextLine());
+                        this.input_stream.nextLine();
+                        break;
+                    
+                    case "SERVER_ENEMY_DIRECTION_START":
+                        enemy_direction = Integer.parseInt(this.input_stream.nextLine());
+                        this.input_stream.nextLine();
+                        break;
+                        
+                    case "SERVER_ENEMY_LOC_START":
+                        //Make sure enemies have been loaded in before moving them
+                        if(!na.enemies.isEmpty()){
+                            Enemy enemy = this.enemies.get(enemy_ID);
+                            Integer next_grid_ID = Integer.parseInt(this.input_stream.nextLine());
+                            enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), enemy_direction);
+                        }
+                        //Reset enemy and direction to prevent unintentional behavior. Moving in the -1 direction
+                        //is "invalid", meaning nothing actually is moved
+                        enemy_ID=0;
+                        enemy_direction=-1;
+                        this.input_stream.nextLine();
+                        break;
+                    
                     default:
                         System.out.println( "From Server: " + this.input_stream.nextLine() );
                 }
