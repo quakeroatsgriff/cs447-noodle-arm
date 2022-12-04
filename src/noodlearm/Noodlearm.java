@@ -40,6 +40,8 @@ public class Noodlearm extends StateBasedGame{
     public static final String SPEAR_RES = "noodlearm/res/img/spear.png";
     public static final String KNIGHT_DOWN_WALK_ANIMATION = "noodlearm/res/img/knight_down_walk.png";
     public static final String KNIGHT_DOWN_FACE = "noodlearm/res/img/knight_down.png";
+    public static final String KNIGHT_UP_WALK_ANIMATION = "noodlearm/res/img/knight_up_walk.png";
+    public static final String KNIGHT_UP_FACE = "noodlearm/res/img/knight_up.png";
     public static final String KNIGHT_LEFT_WALK_ANIMATION = "noodlearm/res/img/knight_left_walk.png";
     public static final String KNIGHT_LEFT_FACE = "noodlearm/res/img/knight_left.png";
     public static final String KNIGHT_RIGHT_WALK_ANIMATION = "noodlearm/res/img/knight_right_walk.png";
@@ -77,6 +79,8 @@ public class Noodlearm extends StateBasedGame{
         ResourceManager.loadImage(CLUB_RES);
         ResourceManager.loadImage(KNIGHT_DOWN_WALK_ANIMATION);
         ResourceManager.loadImage(KNIGHT_DOWN_FACE);
+        ResourceManager.loadImage(KNIGHT_UP_WALK_ANIMATION);
+        ResourceManager.loadImage(KNIGHT_UP_FACE);
         ResourceManager.loadImage(KNIGHT_LEFT_WALK_ANIMATION);
         ResourceManager.loadImage(KNIGHT_LEFT_FACE);
         ResourceManager.loadImage(KNIGHT_RIGHT_WALK_ANIMATION);

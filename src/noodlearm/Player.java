@@ -20,7 +20,7 @@ public class Player extends Entity {
     private int weapon_count;
     private int weapon_switch_timer;
     public ArrayList<Weapon> weapon_inv;
-    Animation left_walk_animation, right_walk_animation, down_walk_animation;
+    Animation left_walk_animation, right_walk_animation, down_walk_animation, up_walk_animation;
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
@@ -57,6 +57,13 @@ public class Player extends Entity {
         this.down_walk_animation = new Animation(
                 ResourceManager.getSpriteSheet(
                         Noodlearm.KNIGHT_DOWN_WALK_ANIMATION, 500, 500
+                ),
+                0, 0, 3,0, true,
+                150, true
+        );
+        this.up_walk_animation = new Animation(
+                ResourceManager.getSpriteSheet(
+                        Noodlearm.KNIGHT_UP_WALK_ANIMATION, 500, 500
                 ),
                 0, 0, 3,0, true,
                 150, true
@@ -107,6 +114,12 @@ public class Player extends Entity {
                 change_player_sprite("down_walk");
             } else {
                 change_player_sprite("down_still");
+            }
+        } else if ( this.direction == 3 ) {
+            if (this.walking) {
+                change_player_sprite("up_walk");
+            } else {
+                change_player_sprite("up_still");
             }
         } else {
             change_player_sprite( "down_still" );
@@ -220,6 +233,8 @@ public class Player extends Entity {
         removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_LEFT_FACE ) );
         removeAnimation( this.right_walk_animation );
         removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_RIGHT_FACE ) );
+        removeAnimation( this.up_walk_animation );
+        removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_UP_FACE ) );
     }
 
     /**
@@ -256,6 +271,14 @@ public class Player extends Entity {
                 break;
             case "down_still":
                 addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_DOWN_FACE ) );
+                break;
+            case "up_walk":
+                addAnimation(
+                        this.up_walk_animation
+                );
+                break;
+            case "up_still":
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_UP_FACE ) );
                 break;
             default:
                 addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_DOWN_FACE ) );
