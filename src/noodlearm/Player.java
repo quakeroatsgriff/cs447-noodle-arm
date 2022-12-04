@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
+import org.newdawn.slick.Animation;
+
 public class Player extends Entity {
     public int lives_left;
     public int grid_ID;
@@ -18,6 +20,7 @@ public class Player extends Entity {
     private int weapon_count;
     private int weapon_switch_timer;
     public ArrayList<Weapon> weapon_inv;
+    Animation left_walk_animation, right_walk_animation, down_walk_animation, up_walk_animation;
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
@@ -33,12 +36,38 @@ public class Player extends Entity {
         //Can hold 3 weapons
         this.weapon_inv=new ArrayList<Weapon>(3);
 
-        //this.direction=Pushover.PLAYER_F_RES;
+        this.direction=2;
         this.velocity=new Vector(0,0);
         grid_point.setEntity("Player");
-        // addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.PLAYER_F_RES));
-        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
-
+        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_DOWN_FACE));
+        this.left_walk_animation = new Animation(
+                ResourceManager.getSpriteSheet(
+                        Noodlearm.KNIGHT_LEFT_WALK_ANIMATION, 500, 500
+                ),
+                0, 0, 3,0, true,
+                150, true
+        );
+        this.right_walk_animation = new Animation(
+                ResourceManager.getSpriteSheet(
+                        Noodlearm.KNIGHT_RIGHT_WALK_ANIMATION, 500, 500
+                ),
+                0, 0, 3,0, true,
+                150, true
+        );
+        this.down_walk_animation = new Animation(
+                ResourceManager.getSpriteSheet(
+                        Noodlearm.KNIGHT_DOWN_WALK_ANIMATION, 500, 500
+                ),
+                0, 0, 3,0, true,
+                150, true
+        );
+        this.up_walk_animation = new Animation(
+                ResourceManager.getSpriteSheet(
+                        Noodlearm.KNIGHT_UP_WALK_ANIMATION, 500, 500
+                ),
+                0, 0, 3,0, true,
+                150, true
+        );
     }
     
     public void update(Noodlearm na, int delta){
@@ -48,10 +77,11 @@ public class Player extends Entity {
         if(action_timer > 0)  {
             // updateSpriteWalking();
             translate(this.velocity.scale(delta));
+            this.walking = true;
         }
         //Else, movement timer has ended. be stationary
         else {
-            this.walking=true;
+            this.walking=false;
             // updateSpriteWalking();
             this.setX(na.grid.get(this.grid_ID).getX());
             this.setY(na.grid.get(this.grid_ID).getY());
@@ -61,9 +91,38 @@ public class Player extends Entity {
                 clearAllSprites();
                 addImageWithBoundingBox(ResourceManager.getImage(this.weapon.texture));
                 //Load weapon before loading player sprite
-                addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
+                addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_DOWN_FACE));
+
                 this.attacking=false;
             }
+        }
+
+        if ( this.direction == 0 ) {
+            if (this.walking) {
+                change_player_sprite("left_walk");
+            } else {
+                change_player_sprite("left_still");
+            }
+        } else if ( this.direction == 1 ) {
+            if (this.walking) {
+                change_player_sprite("right_walk");
+            } else {
+                change_player_sprite("right_still");
+            }
+        } else if ( this.direction == 2 ) {
+            if (this.walking) {
+                change_player_sprite("down_walk");
+            } else {
+                change_player_sprite("down_still");
+            }
+        } else if ( this.direction == 3 ) {
+            if (this.walking) {
+                change_player_sprite("up_walk");
+            } else {
+                change_player_sprite("up_still");
+            }
+        } else {
+            change_player_sprite( "down_still" );
         }
     }
     
@@ -156,7 +215,7 @@ public class Player extends Entity {
         this.clearAllSprites();
         addImageWithBoundingBox(ResourceManager.getImage(this.weapon.texture));
         //Load weapon before loading player sprite
-        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
+        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.KNIGHT_DOWN_FACE));
 
     }
 
@@ -165,10 +224,17 @@ public class Player extends Entity {
      * sprite is being removed no matter the scenerio the player is in.
      */
     private void clearAllSprites(){
-        removeImage(ResourceManager.getImage(Noodlearm.KNIGHT_FORWARD_RES));
         removeImage(ResourceManager.getImage(Noodlearm.SWORD_RES));
         removeImage(ResourceManager.getImage(Noodlearm.SPEAR_RES));
         removeImage(ResourceManager.getImage(Noodlearm.CLUB_RES));
+        removeAnimation( this.down_walk_animation );
+        removeImage(ResourceManager.getImage(Noodlearm.KNIGHT_DOWN_FACE));
+        removeAnimation( this.left_walk_animation );
+        removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_LEFT_FACE ) );
+        removeAnimation( this.right_walk_animation );
+        removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_RIGHT_FACE ) );
+        removeAnimation( this.up_walk_animation );
+        removeImage( ResourceManager.getImage( Noodlearm.KNIGHT_UP_FACE ) );
     }
 
     /**
@@ -176,5 +242,46 @@ public class Player extends Entity {
      */
     public int getRemainingTime(){
         return action_timer;
+    }
+
+    public void change_player_sprite( String direction ) {
+
+        clearAllSprites();
+        switch ( direction ) {
+            case "left_walk":
+                addAnimation(
+                        this.left_walk_animation
+                );
+                break;
+            case "left_still":
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_LEFT_FACE ) );
+                break;
+            case "right_walk":
+                addAnimation(
+                        this.right_walk_animation
+                );
+                break;
+            case "right_still":
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_RIGHT_FACE ) );
+                break;
+            case "down_walk":
+                addAnimation(
+                        this.down_walk_animation
+                );
+                break;
+            case "down_still":
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_DOWN_FACE ) );
+                break;
+            case "up_walk":
+                addAnimation(
+                        this.up_walk_animation
+                );
+                break;
+            case "up_still":
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_UP_FACE ) );
+                break;
+            default:
+                addImageWithBoundingBox( ResourceManager.getImage( Noodlearm.KNIGHT_DOWN_FACE ) );
+        }
     }
 }
