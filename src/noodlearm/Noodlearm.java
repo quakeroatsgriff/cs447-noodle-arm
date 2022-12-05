@@ -37,15 +37,22 @@ public class Noodlearm extends StateBasedGame{
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
     public static final String BLANK_RES = "noodlearm/res/img/world/blank.png";
     public static final String WALL_RES = "noodlearm/res/img/world/wall.png";
-    public static final String HIGHLIGHT_RES = "noodlearm/res/img/world/path-highlight.png";
     public static final String SWORD_RES = "noodlearm/res/img/weapons/sword.png";
     public static final String CLUB_RES = "noodlearm/res/img/weapons/club.png";
     public static final String SPEAR_RES = "noodlearm/res/img/weapons/spear.png";
+    public static final String KNIGHT_DOWN_WALK_ANIMATION = "noodlearm/res/img/player/knight_down_walk.png";
+    public static final String KNIGHT_DOWN_FACE = "noodlearm/res/img/player/knight_down.png";
+    public static final String KNIGHT_UP_WALK_ANIMATION = "noodlearm/res/img/player/knight_up_walk.png";
+    public static final String KNIGHT_UP_FACE = "noodlearm/res/img/player/knight_up.png";
+    public static final String KNIGHT_LEFT_WALK_ANIMATION = "noodlearm/res/img/player/knight_left_walk.png";
+    public static final String KNIGHT_LEFT_FACE = "noodlearm/res/img/player/knight_left.png";
+    public static final String KNIGHT_RIGHT_WALK_ANIMATION = "noodlearm/res/img/player/knight_right_walk.png";
+    public static final String KNIGHT_RIGHT_FACE = "noodlearm/res/img/player/knight_right.png";
+    public static final String HIGHLIGHT_RES = "noodlearm/res/img/world/path-highlight.png";
     public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/player/knight.png";
     public static final String HOUND_RES = "noodlearm/res/img/enemies/hound.png";
     public static final String SKELETON_RES = "noodlearm/res/img/enemies/skeleton.png";
     public static final String CLAW_RES = "noodlearm/res/img/weapons/claw.png";
-
 
     /*
     * Creates the Noodle Arm game frame.
@@ -78,6 +85,14 @@ public class Noodlearm extends StateBasedGame{
         ResourceManager.loadImage(SWORD_RES);
         ResourceManager.loadImage(SPEAR_RES);
         ResourceManager.loadImage(CLUB_RES);
+        ResourceManager.loadImage(KNIGHT_DOWN_WALK_ANIMATION);
+        ResourceManager.loadImage(KNIGHT_DOWN_FACE);
+        ResourceManager.loadImage(KNIGHT_UP_WALK_ANIMATION);
+        ResourceManager.loadImage(KNIGHT_UP_FACE);
+        ResourceManager.loadImage(KNIGHT_LEFT_WALK_ANIMATION);
+        ResourceManager.loadImage(KNIGHT_LEFT_FACE);
+        ResourceManager.loadImage(KNIGHT_RIGHT_WALK_ANIMATION);
+        ResourceManager.loadImage(KNIGHT_RIGHT_FACE);
         ResourceManager.loadImage(KNIGHT_FORWARD_RES);
         ResourceManager.loadImage(HOUND_RES);
         ResourceManager.loadImage(SKELETON_RES);

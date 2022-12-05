@@ -15,6 +15,8 @@
 - **[13]** Add enemies that pursue the players
 - **[14]** Set up procedurally generated map
 - **[15]** Set up enemies attacking and enemies and players dealing damage 
+- **[16]** Add new animations and sprites for player
 
 ## Open Issues
 - **[17]** Fix bug where players can't see other player's currently equipped weapon
+- **[18]** Set up enemies attacking and enemies and players dealing damage
