@@ -121,6 +121,10 @@ public class Server extends Thread {
         this.output_stream.println( "SERVER_ENEMY_LOC_START\n" + location + "\nSERVER_ENEMY_LOC_END" );
         this.output_stream.flush();
     }
+    public void send_server_enemy_attack(){
+        this.output_stream.println( "SERVER_ENEMY_ATTACK_START\nSERVER_ENEMY_ATTACK_END" );
+        this.output_stream.flush();
+    }
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();

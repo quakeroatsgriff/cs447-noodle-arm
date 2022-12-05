@@ -154,7 +154,8 @@ public class Client extends Thread {
                         enemy_direction = Integer.parseInt(this.input_stream.nextLine());
                         this.input_stream.nextLine();
                         break;
-                        
+                    
+                    //MUST receive SERVER_ENEMY_ID_START and SERVER_ENEMY_DIRECTION_START before receiving this
                     case "SERVER_ENEMY_LOC_START":
                         //Make sure enemies have been loaded in before moving them
                         if(!na.enemies.isEmpty()){
@@ -164,6 +165,23 @@ public class Client extends Thread {
                         }
                         //Reset enemy and direction to prevent unintentional behavior. Moving in the -1 direction
                         //is "invalid", meaning nothing actually is moved
+                        enemy_ID=0;
+                        enemy_direction=-1;
+                        this.input_stream.nextLine();
+                        break;
+                    
+                    //MUST receive SERVER_ENEMY_ID_START and SERVER_ENEMY_DIRECTION_START before receiving this
+                    case "SERVER_ENEMY_ATTACK_START":
+                        //Make sure enemies have been loaded in before moving them
+                        if(!na.enemies.isEmpty()){
+                            Enemy enemy = this.enemies.get(enemy_ID);
+                            while ( lock_weapon_array )
+                                Thread.sleep( 5 );
+                            int direction = enemy.getDirectionToPlayer(na.server_player);
+                            if(direction == -1) enemy.direction=enemy.getDirectionToPlayer(na.client_player);
+                            else enemy.direction=direction;
+                            enemy.attack(na);
+                        }
                         enemy_ID=0;
                         enemy_direction=-1;
                         this.input_stream.nextLine();

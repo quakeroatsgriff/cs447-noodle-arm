@@ -28,6 +28,7 @@ public class Noodlearm extends StateBasedGame{
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
     public ArrayList<Enemy> enemies;
+    public int enemies_alive = 0;
     public Player server_player;
     public Player client_player;
     public String network_identity;
@@ -43,6 +44,7 @@ public class Noodlearm extends StateBasedGame{
     public static final String KNIGHT_FORWARD_RES = "noodlearm/res/img/player/knight.png";
     public static final String HOUND_RES = "noodlearm/res/img/enemies/hound.png";
     public static final String SKELETON_RES = "noodlearm/res/img/enemies/skeleton.png";
+    public static final String CLAW_RES = "noodlearm/res/img/weapons/claw.png";
 
 
     /*
@@ -80,6 +82,7 @@ public class Noodlearm extends StateBasedGame{
         ResourceManager.loadImage(HOUND_RES);
         ResourceManager.loadImage(SKELETON_RES);
         ResourceManager.loadImage(HIGHLIGHT_RES);
+        ResourceManager.loadImage(CLAW_RES);
 
 
     }

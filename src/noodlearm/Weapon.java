@@ -29,7 +29,7 @@ public class Weapon{
                 break;
             case "SKELETON":
             case "HOUND":
-                this.createWeapon(2, 400, 1, 0, null);
+                this.createWeapon(2, 600, 1, 0, Noodlearm.CLAW_RES);
                 break;
         }
 

@@ -14,7 +14,7 @@
 - **[12]** Set up players picking up weapons, store in inventory, and light attack over network.
 - **[13]** Add enemies that pursue the players
 - **[14]** Set up procedurally generated map
+- **[15]** Set up enemies attacking and enemies and players dealing damage 
 
 ## Open Issues
-- **[15]** Set up enemies attacking and enemies and players dealing damage 
 - **[17]** Fix bug where players can't see other player's currently equipped weapon

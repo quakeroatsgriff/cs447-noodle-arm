@@ -69,7 +69,7 @@ public class MapGenerator {
             map.set( this.reachable_location(), 6 ); // club
         }
         // place five hound enemies and five skeleton enemies randomly around the map
-        for ( int i = 0; i < 3; i++ ) {
+        for ( int i = 0; i < 5; i++ ) {
             map.set( this.reachable_location(), 7 ); // hound
             map.set( this.reachable_location(), 8 ); // skeleton
         }

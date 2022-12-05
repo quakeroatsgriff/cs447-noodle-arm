@@ -5,6 +5,7 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class ClientPlayingState extends PlayingState {
@@ -44,29 +45,50 @@ public class ClientPlayingState extends PlayingState {
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
-
+        if(na.client.current_client_player_location == null || na.client.current_server_player_location == null
+        || na.client_player == null || na.server_player == null) return;
         if ( na.client.current_server_player_location != na.server_player.grid_ID & na.client.current_server_player_location != -1 ) {
             na.server_player.move(na.grid.get(na.client.current_server_player_location), na.grid.get(na.server_player.grid_ID));
         }
         if ( na.client.current_client_player_location != na.client_player.grid_ID & na.client.current_client_player_location != -1 ) {
             na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID));
         }
-
+        // we lock the weapon array when editing on this thread to avoid concurrency issues
+        while ( na.client.lock_weapon_array){}
         for ( WeaponSprite ws : na.weapons_on_ground ) {
             if ( Weapon.attackTimer( ws, na, delta ) )
                 break;
+            //Iterate through all the enemies and players and determine if the weapon sprite shares
+            //the same grid ID. Deal damage to the entity if that's the case
+            for(Enemy enemy : na.enemies){
+                if(enemy.grid_ID == ws.grid_ID) {
+                    ws.dealDamage(na, enemy);
+                    break;
+                }
+            }
+            if(na.client_player.grid_ID == ws.grid_ID){
+                ws.dealDamage(na, na.client_player);
+            }
+            else if(na.server_player.grid_ID == ws.grid_ID){
+                ws.dealDamage(na, na.server_player);
+            }
         }
+        int enemies_alive=0;
         //Iterate through each enemy and determine if they need to be moved
         if(!na.client.enemies.isEmpty()){
-            for(int i=0; i < na.enemies.size(); i++) {
+            //Remove any enemies from the world if their health is 0 or less
+            for(int i=0; i < na.client.enemies.size(); i++) {
                 Enemy client_enemy = na.client.enemies.get(i);
-                Enemy na_enemy = na.enemies.get(i);
-                na_enemy.timeUpdate(na, delta);
-                if(na_enemy.grid_ID != client_enemy.grid_ID){
-                    na_enemy.move(na.grid.get(client_enemy.grid_ID), na.grid.get(na_enemy.grid_ID), client_enemy.direction);
+                if(client_enemy.hit_points > 0){
+                    enemies_alive++;
+                    client_enemy.timeUpdate(na, delta);
+                    if(client_enemy.grid_ID != client_enemy.grid_ID){
+                        client_enemy.move(na.grid.get(client_enemy.grid_ID), na.grid.get(client_enemy.grid_ID), client_enemy.direction);
+                    }
                 }
             }
         }
+        na.enemies_alive=enemies_alive;
 
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
