@@ -48,7 +48,7 @@ public class PlayingState extends BasicGameState {
         Noodlearm na = (Noodlearm)game;
 
         Player player = null, other_player = null;
-
+        
         if ( na.network_identity.matches( "Server" ) ) {
             player = na.server_player;
             other_player = na.client_player;
@@ -80,9 +80,13 @@ public class PlayingState extends BasicGameState {
             grid_cell.translate( world_coordinate_translation );
         }
         for(Enemy enemy : na.enemies){
-            enemy.translate(relative_coordinate_translation);
-            enemy.render(g);
-            enemy.translate( world_coordinate_translation );
+            System.out.println(enemy.hit_points);
+            //Remove any enemies from the world if their health is 0 or less
+            if(enemy.hit_points > 0){
+                enemy.translate(relative_coordinate_translation);
+                enemy.render(g);
+                enemy.translate( world_coordinate_translation );
+            }
         }
         // we lock the weapon array when editing on this thread to avoid concurrency issues
         if(na.client != null)
@@ -109,14 +113,14 @@ public class PlayingState extends BasicGameState {
         player.render(g);
         // move them back
         player.setPosition( old_postition );
-        g.drawString("Enemies Remaining: "+Integer.toString(na.enemies.size()), 200, 20);
+        g.drawString("Enemies Remaining: "+Integer.toString(na.enemies_alive), 200, 20);
     }
 
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         Input input = container.getInput();
         Noodlearm na = (Noodlearm)game;
-
+        if(na.client_player == null || na.server_player == null) return;
         for ( WeaponSprite ws : na.weapons_on_ground ) {
             if ( Weapon.attackTimer( ws, na, delta ) )
                 break;
@@ -130,7 +134,6 @@ public class PlayingState extends BasicGameState {
             }
             //Iterate through all the enemies and players and determine if the weapon sprite shares
             //the same grid ID. Deal damage to the entity if that's the case
-            //TODO maybe change this so it doesn't run in n^2 time
             for(Enemy enemy : na.enemies){
                 if(enemy.grid_ID == ws.grid_ID) {
                     ws.dealDamage(na, enemy);
@@ -145,53 +148,49 @@ public class PlayingState extends BasicGameState {
             }
         }
         //Remove any enemies from the world if their health is 0 or less
-        for (Iterator<Enemy> en_iter = na.enemies.iterator(); en_iter.hasNext();){ 
-            Enemy enemy=en_iter.next();
-            if(enemy.hit_points <=0) {
-                //Free up tile spot
-                na.grid.get(enemy.grid_ID).walkable=true;
-                en_iter.remove();
-                continue;
-            }
-        }
+        int enemies_alive=0;
         for(Enemy enemy : na.enemies)   {
-            enemy.timeUpdate(na, delta);
-            //Unhighlight any path tiles in order to prevent the same tile being lit up multiple times in a row.
-            Stack<Integer> move_order= (Stack<Integer>)enemy.move_order.clone();
-            while(!move_order.empty()){
-                Grid grid_point = na.grid.get(move_order.pop());
-                // grid_point.unhighlight(na,highlight_flag);
-            }
-            //Enemy will move or attack if the movement timer is up
-            if(enemy.getRemainingTime() <= 0){
-                //If an enemy is within attack range of the targeted player, charge up attack
-                if(enemy.withinAttackRange(na.server_player) || enemy.withinAttackRange(na.client_player))  {
-                    int direction = enemy.getDirectionToPlayer(na.server_player);
-                    if(direction == -1) enemy.direction=enemy.getDirectionToPlayer(na.client_player);
-                    else enemy.direction=direction;
-                    //Charge up attack, or actually do the attack if the charge timer is up
-                    if(enemy.chargeUpAttack(delta)){
+            //Remove any enemies from the world if their health is 0 or less
+            if(enemy.hit_points > 0){
+                enemies_alive++;
+                enemy.timeUpdate(na, delta);
+                //Unhighlight any path tiles in order to prevent the same tile being lit up multiple times in a row.
+                Stack<Integer> move_order = (Stack<Integer>)enemy.move_order.clone();
+                while(!move_order.empty()){
+                    Grid grid_point = na.grid.get(move_order.pop());
+                    // grid_point.unhighlight(na,highlight_flag);
+                }
+                //Enemy will move or attack if the movement timer is up
+                if(enemy.getRemainingTime() <= 0){
+                    //If an enemy is within attack range of the targeted player, charge up attack
+                    if(enemy.withinAttackRange(na.server_player) || enemy.withinAttackRange(na.client_player))  {
+                        int direction = enemy.getDirectionToPlayer(na.server_player);
+                        if(direction == -1) enemy.direction=enemy.getDirectionToPlayer(na.client_player);
+                        else enemy.direction=direction;
+                        //Charge up attack, or actually do the attack if the charge timer is up
+                        if(enemy.chargeUpAttack(delta)){
+                            na.server.send_server_enemy_ID(Integer.toString(enemy.ID));
+                            enemy.attack(na);
+                            na.server.send_server_enemy_attack();
+                        }
+                    }
+                    else{
+                        enemy.resetChargeUp();
                         na.server.send_server_enemy_ID(Integer.toString(enemy.ID));
-                        enemy.attack(na);
-                        na.server.send_server_enemy_attack();
-                    }
-                }
-                else{
-                    enemy.resetChargeUp();
-                    na.server.send_server_enemy_ID(Integer.toString(enemy.ID));
-                    //Determine the path the enemy should move in and also send the outcome to the client
-                    
-                    enemy.updateMoveOrder(na);
-                    int next_grid_ID=enemy.getNextMove(na);
-                    if(next_grid_ID != -1){
-                        int direction=enemy.getMoveDirection(next_grid_ID);
-                        na.server.send_server_enemy_direction(Integer.toString(direction));
-                        enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), direction);    
-                        na.server.send_server_enemy_location(Integer.toString(next_grid_ID));
+                        //Determine the path the enemy should move in and also send the outcome to the client
+                        
+                        enemy.updateMoveOrder(na);
+                        int next_grid_ID=enemy.getNextMove(na);
+                        if(next_grid_ID != -1){
+                            int direction=enemy.getMoveDirection(next_grid_ID);
+                            na.server.send_server_enemy_direction(Integer.toString(direction));
+                            enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), direction);    
+                            na.server.send_server_enemy_location(Integer.toString(next_grid_ID));
+                        }
                     }
                 }
             }
-            
+            na.enemies_alive=enemies_alive;
         }
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);

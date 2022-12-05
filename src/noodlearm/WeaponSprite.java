@@ -2,6 +2,7 @@ package noodlearm;
 import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
+import jig.ResourceManager;
 import java.util.Random;
 import java.io.*;
 
@@ -37,7 +38,7 @@ public class WeaponSprite extends Entity{
         this.direction=direction;
         this.halfway_flag=false;
         this.dealt_damage=false;
-        //Determine which direction to attack in for swords or clubs
+        //Determine which direction to swing in for swords or clubs
         if(weapon.type=="CLUB" || weapon.type=="SWORD"){
             switch(direction){
                 case Noodlearm.LEFT:
@@ -63,6 +64,21 @@ public class WeaponSprite extends Entity{
                     break;
             }
         }
+        //Set weapon sprite grid tile relative to direction of attack
+        switch(direction){
+            case Noodlearm.LEFT:
+                    this.grid_ID-=1;
+                    break;
+                case Noodlearm.RIGHT:
+                    this.grid_ID+=1;
+                    break;
+                case Noodlearm.DOWN:
+                    this.grid_ID+=48;
+                    break;
+                case Noodlearm.UP:
+                    this.grid_ID-=48;
+                    break;
+        }
     }
     
     //Constructor for a weapon that is attacking from an enemy
@@ -85,21 +101,25 @@ public class WeaponSprite extends Entity{
                     this.setRotation(weapon.rotation_amount + 135);
                     this.setX(this.getX()-48);
                     this.setY(this.getY()+32);
+                    this.grid_ID-=1;
                     break;
                 case Noodlearm.RIGHT:
                     this.setRotation(weapon.rotation_amount - 45);
                     this.setX(this.getX()+48);
                     this.setY(this.getY()-32);
+                    this.grid_ID+=1;
                     break;
                 case Noodlearm.DOWN:
                     this.setRotation(weapon.rotation_amount + 45);
                     this.setX(this.getX()+32);
                     this.setY(this.getY()+64);
+                    this.grid_ID+=48;
                     break;
                 case Noodlearm.UP:
                     this.setRotation(weapon.rotation_amount + 225);
                     this.setX(this.getX()-32);
                     this.setY(this.getY()-64);
+                    this.grid_ID-=48;
                     break;
             }
         }
@@ -166,20 +186,16 @@ public class WeaponSprite extends Entity{
             this.halfway_flag=true;
             switch(this.direction){
                 case Noodlearm.LEFT:
-                    this.translate(new Vector(-(delta*128)/(this.weapon.speed),0));
-                    this.setRotation(weapon.rotation_amount + 180);
+                    this.grid_ID-=1;
                     break;
                 case Noodlearm.RIGHT:
-                    this.translate(new Vector((float)((delta*128)/(this.weapon.speed)),0));
-                    this.setRotation(weapon.rotation_amount);
+                    this.grid_ID+=1;
                     break;
                 case Noodlearm.DOWN:
-                    this.translate(new Vector(0,(delta*128)/(this.weapon.speed)));
-                    this.setRotation(weapon.rotation_amount + 90);
+                    this.grid_ID+=48;
                     break;
                 case Noodlearm.UP:
-                    this.translate(new Vector(0,-(delta*128)/(this.weapon.speed)));
-                    this.setRotation(weapon.rotation_amount + 270);
+                    this.grid_ID-=48;
                     break;
             }
         }
@@ -211,6 +227,11 @@ public class WeaponSprite extends Entity{
         if(!this.attacking)      return false;
         if(this.dealt_damage)   return false;
         enemy.hit_points -= this.weapon.damage;
+        //Free up tile space the enemy is on
+        if(enemy.hit_points <= 0)   {
+            na.grid.get(enemy.grid_ID).walkable=true;
+            enemy.removeImage(ResourceManager.getImage(enemy.texture));
+        }
         //Only deal damage once per weapon sprite
         this.dealt_damage = true;
         return true;

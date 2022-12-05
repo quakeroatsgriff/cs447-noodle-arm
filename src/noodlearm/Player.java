@@ -17,6 +17,7 @@ public class Player extends Entity {
     private int held_weapon_ID;
     private int weapon_count;
     private int weapon_switch_timer;
+    public String texture;
     public ArrayList<Weapon> weapon_inv;
 
     public Player(Grid grid_point){

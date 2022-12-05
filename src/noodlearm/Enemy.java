@@ -21,6 +21,7 @@ public class Enemy extends Entity {
     private Vector velocity;
     public Stack<Integer> move_order;
     public int player_last_known_loc;
+    public String texture;
 
     public Enemy(Grid grid_point, String type, int ID){
         super(grid_point.getX(),grid_point.getY());
@@ -43,9 +44,11 @@ public class Enemy extends Entity {
         switch(type){
             case "HOUND":
                 addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.HOUND_RES));
+                this.texture=Noodlearm.HOUND_RES;
                 break;
             case "SKELETON":
                 addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.SKELETON_RES));
+                this.texture=Noodlearm.SKELETON_RES;
                 break;
         }
 
@@ -87,9 +90,9 @@ public class Enemy extends Entity {
         this.grid_ID = grid_point_new.getID();
         this.direction=direction;
         //Gets the direction from the old to the new grid 'point'
-        this.velocity = new Vector(dir_x * (float)(64.0f / 250.0f), dir_y * (float)(64.0f / 250.0f));
-         //Set movement timer to 250 ms
-        this.action_timer=250;
+        this.velocity = new Vector(dir_x * (float)(64.0f / 500.0f), dir_y * (float)(64.0f / 500.0f));
+         //Set movement timer to 500 ms
+        this.action_timer=500;
         return true;
     }
     /**
@@ -204,9 +207,11 @@ public class Enemy extends Entity {
                     }
                 }
             }
-            //If somehow no path was chosen, just return the current stack as it is now
+            //If somehow no path was chosen, just return moving down to prevent crashing
             if(cheapest_node.getID() == -1){
-                return null;
+                Stack<Integer> emergency_stack =new Stack<Integer>();
+                emergency_stack.push(start_grid_node.getID()+1);
+                return emergency_stack;
             }else{
                 ArrayList<Integer> closed=(ArrayList<Integer>)closed_list.clone();
                 closed.add(cheapest_node.getID());

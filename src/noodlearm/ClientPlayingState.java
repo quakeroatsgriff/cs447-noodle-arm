@@ -60,7 +60,6 @@ public class ClientPlayingState extends PlayingState {
                 break;
             //Iterate through all the enemies and players and determine if the weapon sprite shares
             //the same grid ID. Deal damage to the entity if that's the case
-            //TODO maybe change this so it doesn't run in n^2 time
             for(Enemy enemy : na.enemies){
                 if(enemy.grid_ID == ws.grid_ID) {
                     ws.dealDamage(na, enemy);
@@ -74,27 +73,22 @@ public class ClientPlayingState extends PlayingState {
                 ws.dealDamage(na, na.server_player);
             }
         }
+        int enemies_alive=0;
         //Iterate through each enemy and determine if they need to be moved
         if(!na.client.enemies.isEmpty()){
             //Remove any enemies from the world if their health is 0 or less
-            for (Iterator<Enemy> en_iter = na.enemies.iterator(); en_iter.hasNext();){ 
-                Enemy enemy=en_iter.next();
-                if(enemy.hit_points <=0) {
-                    //Free up tile spot
-                    na.grid.get(enemy.grid_ID).walkable=true;
-                    en_iter.remove();
-                    break;
-                }
-            }
-            for(int i=0; i < na.enemies.size(); i++) {
+            for(int i=0; i < na.client.enemies.size(); i++) {
                 Enemy client_enemy = na.client.enemies.get(i);
-                Enemy na_enemy = na.enemies.get(i);
-                na_enemy.timeUpdate(na, delta);
-                if(na_enemy.grid_ID != client_enemy.grid_ID){
-                    na_enemy.move(na.grid.get(client_enemy.grid_ID), na.grid.get(na_enemy.grid_ID), client_enemy.direction);
+                if(client_enemy.hit_points > 0){
+                    enemies_alive++;
+                    client_enemy.timeUpdate(na, delta);
+                    if(client_enemy.grid_ID != client_enemy.grid_ID){
+                        client_enemy.move(na.grid.get(client_enemy.grid_ID), na.grid.get(client_enemy.grid_ID), client_enemy.direction);
+                    }
                 }
             }
         }
+        na.enemies_alive=enemies_alive;
 
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);

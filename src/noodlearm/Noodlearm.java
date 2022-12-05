@@ -28,6 +28,7 @@ public class Noodlearm extends StateBasedGame{
     public ArrayList<Grid> grid;
     public ArrayList<WeaponSprite> weapons_on_ground;
     public ArrayList<Enemy> enemies;
+    public int enemies_alive = 0;
     public Player server_player;
     public Player client_player;
     public String network_identity;
