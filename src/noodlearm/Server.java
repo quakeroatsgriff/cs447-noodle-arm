@@ -125,6 +125,9 @@ public class Server extends Thread {
         this.output_stream.println( "SERVER_ENEMY_ATTACK_START\nSERVER_ENEMY_ATTACK_END" );
         this.output_stream.flush();
     }
+    public void send_server_enemy_dead() {
+        this.output_stream.println( "SERVER_ENEMY_DEAD_START\nSERVER_ENEMY_DEAD_END");
+    }
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();

@@ -54,7 +54,13 @@ public class ClientPlayingState extends PlayingState {
             na.client_player.move(na.grid.get(na.client.current_client_player_location), na.grid.get(na.client_player.grid_ID));
         }
         // we lock the weapon array when editing on this thread to avoid concurrency issues
-        while ( na.client.lock_weapon_array){}
+        while ( na.client.lock_weapon_array) {
+            try {
+                Thread.sleep( 5 );
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         for ( WeaponSprite ws : na.weapons_on_ground ) {
             if ( Weapon.attackTimer( ws, na, delta ) )
                 break;
