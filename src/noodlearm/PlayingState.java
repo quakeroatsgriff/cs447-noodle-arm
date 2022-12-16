@@ -208,6 +208,9 @@ public class PlayingState extends BasicGameState {
                         }
                     }
                 }
+            } else {
+                na.server.send_server_enemy_ID(Integer.toString(enemy.ID));
+                na.server.send_server_enemy_dead();
             }
             na.enemies_alive=enemies_alive;
         }

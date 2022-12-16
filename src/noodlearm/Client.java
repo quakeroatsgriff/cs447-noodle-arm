@@ -149,16 +149,16 @@ public class Client extends Thread {
                         enemy_ID = Integer.parseInt(this.input_stream.nextLine());
                         this.input_stream.nextLine();
                         break;
-                    
+
                     case "SERVER_ENEMY_DIRECTION_START":
                         enemy_direction = Integer.parseInt(this.input_stream.nextLine());
                         this.input_stream.nextLine();
                         break;
-                    
+
                     //MUST receive SERVER_ENEMY_ID_START and SERVER_ENEMY_DIRECTION_START before receiving this
                     case "SERVER_ENEMY_LOC_START":
                         //Make sure enemies have been loaded in before moving them
-                        if(!na.enemies.isEmpty()){
+                        if (!na.enemies.isEmpty()){
                             Enemy enemy = this.enemies.get(enemy_ID);
                             Integer next_grid_ID = Integer.parseInt(this.input_stream.nextLine());
                             enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), enemy_direction);
@@ -167,7 +167,7 @@ public class Client extends Thread {
                         //is "invalid", meaning nothing actually is moved
                         enemy_ID=0;
                         enemy_direction=-1;
-                        this.input_stream.nextLine();
+                        while (!this.input_stream.nextLine().matches("SERVER_ENEMY_LOC_END"));
                         break;
                     
                     //MUST receive SERVER_ENEMY_ID_START and SERVER_ENEMY_DIRECTION_START before receiving this
@@ -184,10 +184,21 @@ public class Client extends Thread {
                         }
                         enemy_ID=0;
                         enemy_direction=-1;
-                        this.input_stream.nextLine();
+                        while (!this.input_stream.nextLine().matches("SERVER_ENEMY_ATTACK_END"));
+                        break;
+
+                    case "SERVER_ENEMY_DEAD_START":
+                        if(!na.enemies.isEmpty()){
+                            Enemy enemy = this.enemies.get(enemy_ID);
+                            enemy.hit_points = -1;
+                        }
+                        enemy_ID=0;
+                        enemy_direction=-1;
+                        while (!this.input_stream.nextLine().matches("SERVER_ENEMY_DEAD_END"));
                         break;
                     
                     default:
+                        System.out.println( "From Server: " + next_line );
                         System.out.println( "From Server: " + this.input_stream.nextLine() );
                 }
             }
