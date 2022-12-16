@@ -65,4 +65,17 @@ public class Grid extends Entity{
     public int getType(){
         return this.type;
     }
+
+    /**
+     * Removes the highlighted texture from the grid
+     * @param pushover
+     * @param highlight_flag
+     */
+    public void unhighlight(Noodlearm na){
+        removeImage(ResourceManager.getImage(Noodlearm.PATH_HIGHLIGHT_RES));
+    }
+    
+    public void highlight(){
+        addImageWithBoundingBox(ResourceManager.getImage(Noodlearm.PATH_HIGHLIGHT_RES));
+    }
 }

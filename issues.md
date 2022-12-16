@@ -19,8 +19,9 @@
 - **[19]** Add HUD
 - **[20]** Fix issue where enemies don't sync all the time between client and playerg
 - **[21]** Win/Lose conditions
+- **[22]** Scoring
+
 ## Open Issues
 - **[17]** Fix bug where players can't see other player's currently equipped weapon
-- **[22]** Scoring
 - **[23]** Fix bug where client map isn't updated upon starting new game after 1st one.
 

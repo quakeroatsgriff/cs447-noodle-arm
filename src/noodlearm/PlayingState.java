@@ -28,12 +28,17 @@ public class PlayingState extends BasicGameState {
     @Override
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
+        na.player_score+=10000;
         // create and start server thread
         if(na.server==null){
             na.server = new Server( na );
             na.server.start();
 
             na.client = null;
+        }
+        else{
+            na.server_player.hit_points=20;
+            na.client_player.hit_points=20;
         }
         initTestLevel( na );
         equipped = null;
@@ -133,8 +138,10 @@ public class PlayingState extends BasicGameState {
                 equipped.render(g);
             }
         }
-        g.drawString("Enemies Remaining: " + na.enemies_alive, 200, 10);
-        g.drawString("Health: " + player.hit_points, 500, 10);
+        g.drawString("Enemies Remaining: " + na.enemies_alive, 100, 10);
+        g.drawString("Health: " + player.hit_points, 300, 10);
+        g.drawString("Score: " + na.player_score, 450, 10);
+
     }
 
     @Override
@@ -179,7 +186,7 @@ public class PlayingState extends BasicGameState {
                 Stack<Integer> move_order = (Stack<Integer>)enemy.move_order.clone();
                 while(!move_order.empty()){
                     Grid grid_point = na.grid.get(move_order.pop());
-                    // grid_point.unhighlight(na,highlight_flag);
+                    grid_point.unhighlight(na);
                 }
                 //Enemy will move or attack if the movement timer is up
                 if(enemy.getRemainingTime() <= 0){
@@ -216,9 +223,19 @@ public class PlayingState extends BasicGameState {
             }
             na.enemies_alive=enemies_alive;
         }
+        if(na.highlight){
+            for(Enemy enemy : na.enemies)   {
+                Stack<Integer> move_order= (Stack<Integer>)enemy.move_order.clone();
+                while(!move_order.empty()){
+                    Grid grid_point = na.grid.get(move_order.pop());
+                    grid_point.highlight();
+                }
+            }
+        }
         // enemies_alive=0;
         //All enemies are destroyed
         if(enemies_alive==0)    {
+            na.player_score+=20000;
             na.server.send_server_win_level();
             na.win_or_lose=true;
             na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
@@ -227,10 +244,12 @@ public class PlayingState extends BasicGameState {
         na.client_player.update(na, delta);
         //One of the players died, lose game
         if(na.server_player.hit_points <= 0 || na.client_player.hit_points <= 0){
+            na.player_score-=1000;
             na.server.send_server_lose_level();
             na.win_or_lose=false;
             na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
         }
+        na.player_score-=(delta/10);
         checkInput(input, na);
     }
 
@@ -308,6 +327,14 @@ public class PlayingState extends BasicGameState {
             //Only switch if the player has at least 1 weapon
             if ( !na.server_player.weapon_inv.isEmpty() )
                 na.server_player.changeWeapon();
+            return;
+        }
+        if(input.isKeyDown(Input.KEY_H)){
+            na.highlight=true;
+            return;
+        }
+        if(input.isKeyDown(Input.KEY_J)){
+            na.highlight=false;
             return;
         }
     }

@@ -159,7 +159,7 @@ public class Client extends Thread {
                     //MUST receive SERVER_ENEMY_ID_START and SERVER_ENEMY_DIRECTION_START before receiving this
                     case "SERVER_ENEMY_LOC_START":
                         //Make sure enemies have been loaded in before moving them
-                        if (!na.enemies.isEmpty()){
+                        if (!this.enemies.isEmpty()){
                             Enemy enemy = this.enemies.get(enemy_ID);
                             Integer next_grid_ID = Integer.parseInt(this.input_stream.nextLine());
                             enemy.move(na.grid.get(next_grid_ID), na.grid.get(enemy.grid_ID), enemy_direction);
@@ -200,11 +200,13 @@ public class Client extends Thread {
                     
                     case "SERVER_WIN_LEVEL_START":
                         na.win_or_lose=true;
+                        na.player_score+=20000;
                         na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
                         break;
 
                     case "SERVER_LOSE_LEVEL_START":
                         na.win_or_lose=false;
+                        na.player_score-=1000;
                         na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
                         break;
                     default:
