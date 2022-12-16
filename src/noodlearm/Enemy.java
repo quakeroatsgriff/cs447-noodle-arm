@@ -26,7 +26,7 @@ public class Enemy extends Entity {
     public Enemy(Grid grid_point, String type, int ID){
         super(grid_point.getX(),grid_point.getY());
         this.setScale((float) 0.125);
-        this.hit_points=1;
+        this.hit_points=4;
         this.action_timer=0;
         this.charge_up_timer=0;
         this.ID = ID;

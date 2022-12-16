@@ -22,11 +22,16 @@ public class ClientPlayingState extends PlayingState {
     @Override
     public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
+        na.player_score+=10000;
 
         // create and start client thread
         if(na.client==null){
             na.client = new Client( na );
             na.client.start();
+        }
+        else{
+            na.server_player.hit_points=20;
+            na.client_player.hit_points=20;
         }
         // here we check if the server sent us a map,
         // if they haven't we sleep for one second and check again
@@ -39,7 +44,6 @@ public class ClientPlayingState extends PlayingState {
         }
         
         initTestLevel( na );
-
     }
 
     @Override
@@ -99,6 +103,7 @@ public class ClientPlayingState extends PlayingState {
 
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
+        na.player_score-=(delta/100);
         checkInput( input, na );
     }
 

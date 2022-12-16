@@ -26,6 +26,7 @@ public class Noodlearm extends StateBasedGame{
 
     public boolean win_or_lose=true;
     public int player_score=0;
+    public boolean highlight=false;
     Client client;
     Server server;
     public ArrayList<Grid> grid;
@@ -36,6 +37,7 @@ public class Noodlearm extends StateBasedGame{
     public Player client_player;
     public String network_identity;
     //Resource strings
+    public static final String PATH_HIGHLIGHT_RES = "noodlearm/res/img/world/path-highlight.png";
     public static final String WIN_SCREEN_RES = "noodlearm/res/img/winscreen.png";
     public static final String STARTUP_SCREEN_RES = "noodlearm/res/img/splashscreen.png";
     public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/img/losescreen.png";
@@ -81,7 +83,7 @@ public class Noodlearm extends StateBasedGame{
         addState(new GameoverState());
         addState(new WinLoseState());
         //Preload resources here
-        //TODO
+        ResourceManager.loadImage(PATH_HIGHLIGHT_RES);
         ResourceManager.loadImage(STARTUP_SCREEN_RES);
         ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
         ResourceManager.loadImage(BLANK_RES);
