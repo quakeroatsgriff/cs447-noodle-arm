@@ -26,7 +26,7 @@ public class Player extends Entity {
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
-        this.hit_points=15;
+        this.hit_points=1;
         this.action_timer=0;
         this.weapon_switch_timer=0;
         this.walking=false;
