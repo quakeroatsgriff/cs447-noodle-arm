@@ -24,9 +24,10 @@ public class ClientPlayingState extends PlayingState {
         Noodlearm na = (Noodlearm)game;
 
         // create and start client thread
-        na.client = new Client( na );
-        na.client.start();
-
+        if(na.client==null){
+            na.client = new Client( na );
+            na.client.start();
+        }
         // here we check if the server sent us a map,
         // if they haven't we sleep for one second and check again
         while ( na.client.current_map.equals( "" ) ) {
@@ -36,7 +37,7 @@ public class ClientPlayingState extends PlayingState {
                 throw new RuntimeException(e);
             }
         }
-
+        
         initTestLevel( na );
 
     }

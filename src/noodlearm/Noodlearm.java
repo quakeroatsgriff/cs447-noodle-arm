@@ -14,6 +14,7 @@ public class Noodlearm extends StateBasedGame{
     public static final int PLAYINGSTATE  = 1;
     public static final int CLIENTPLAYINGSTATE  = 2;
     public static final int GAMEOVERSTATE  = 3;
+    public static final int WINLOSESTATE = 4;
 
     public final int ScreenWidth;
     public final int ScreenHeight;
@@ -23,6 +24,8 @@ public class Noodlearm extends StateBasedGame{
     public static final int DOWN = 2;
     public static final int UP = 3;    
 
+    public boolean win_or_lose=true;
+    public int player_score=0;
     Client client;
     Server server;
     public ArrayList<Grid> grid;
@@ -33,8 +36,9 @@ public class Noodlearm extends StateBasedGame{
     public Player client_player;
     public String network_identity;
     //Resource strings
-    public static final String STARTUP_SCREEN_RES = "noodlearm/res/";
-    public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/";
+    public static final String WIN_SCREEN_RES = "noodlearm/res/img/winscreen.png";
+    public static final String STARTUP_SCREEN_RES = "noodlearm/res/img/splashscreen.png";
+    public static final String GAMEOVER_SCREEN_RES = "noodlearm/res/img/losescreen.png";
     public static final String BLANK_RES = "noodlearm/res/img/world/blank.png";
     public static final String WALL_RES = "noodlearm/res/img/world/wall.png";
     public static final String SWORD_RES = "noodlearm/res/img/weapons/sword.png";
@@ -75,11 +79,11 @@ public class Noodlearm extends StateBasedGame{
         addState(new PlayingState());
         addState(new ClientPlayingState());
         addState(new GameoverState());
-
+        addState(new WinLoseState());
         //Preload resources here
         //TODO
-        // ResourceManager.loadImage(STARTUP_SCREEN_RES);
-        // ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
+        ResourceManager.loadImage(STARTUP_SCREEN_RES);
+        ResourceManager.loadImage(GAMEOVER_SCREEN_RES);
         ResourceManager.loadImage(BLANK_RES);
         ResourceManager.loadImage(WALL_RES);
         ResourceManager.loadImage(SWORD_RES);

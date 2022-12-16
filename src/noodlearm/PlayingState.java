@@ -6,6 +6,7 @@ import jig.Vector;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.*;
 
 import java.io.File;
 import java.util.Iterator;
@@ -28,11 +29,12 @@ public class PlayingState extends BasicGameState {
 	public void enter(GameContainer container, StateBasedGame game) {
         Noodlearm na = (Noodlearm)game;
         // create and start server thread
-        na.server = new Server( na );
-        na.server.start();
+        if(na.server==null){
+            na.server = new Server( na );
+            na.server.start();
 
-        na.client = null;
-
+            na.client = null;
+        }
         initTestLevel( na );
         equipped = null;
 
@@ -214,8 +216,21 @@ public class PlayingState extends BasicGameState {
             }
             na.enemies_alive=enemies_alive;
         }
+        // enemies_alive=0;
+        //All enemies are destroyed
+        if(enemies_alive==0)    {
+            na.server.send_server_win_level();
+            na.win_or_lose=true;
+            na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
+        }
         na.server_player.update(na, delta);
         na.client_player.update(na, delta);
+        //One of the players died, lose game
+        if(na.server_player.hit_points <= 0 || na.client_player.hit_points <= 0){
+            na.server.send_server_lose_level();
+            na.win_or_lose=false;
+            na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
+        }
         checkInput(input, na);
     }
 

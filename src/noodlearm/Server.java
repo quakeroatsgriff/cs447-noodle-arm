@@ -128,6 +128,14 @@ public class Server extends Thread {
     public void send_server_enemy_dead() {
         this.output_stream.println( "SERVER_ENEMY_DEAD_START\nSERVER_ENEMY_DEAD_END");
     }
+    public void send_server_win_level(){
+        this.output_stream.println( "SERVER_WIN_LEVEL_START\nSERVER_WIN_LEVEL_END");
+        this.output_stream.flush();
+    }
+    public void send_server_lose_level(){
+        this.output_stream.println( "SERVER_LOSE_LEVEL_START\nSERVER_LOSE_LEVEL_END");
+        this.output_stream.flush();
+    }
     // to be called when we want to kill this thread and stop networking
     public void kill_thread() {
         input_stream.close();

@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import org.newdawn.slick.state.transition.*;
 
 /*
  Class for handling client networking logic. Operates on it's own thread,
@@ -197,6 +198,15 @@ public class Client extends Thread {
                         while (!this.input_stream.nextLine().matches("SERVER_ENEMY_DEAD_END"));
                         break;
                     
+                    case "SERVER_WIN_LEVEL_START":
+                        na.win_or_lose=true;
+                        na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
+                        break;
+
+                    case "SERVER_LOSE_LEVEL_START":
+                        na.win_or_lose=false;
+                        na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());
+                        break;
                     default:
                         System.out.println( "From Server: " + next_line );
                         System.out.println( "From Server: " + this.input_stream.nextLine() );
