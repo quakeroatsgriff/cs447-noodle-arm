@@ -1,5 +1,6 @@
 package noodlearm;
 
+import java.io.Console;
 import java.util.ArrayList;
 import jig.Entity;
 import jig.ResourceManager;
@@ -15,7 +16,7 @@ public class Player extends Entity {
     private boolean walking;
     private boolean attacking;
     private Vector velocity;
-    private Weapon weapon;
+    public Weapon weapon;
     private int held_weapon_ID;
     private int weapon_count;
     private int weapon_switch_timer;
@@ -25,7 +26,7 @@ public class Player extends Entity {
 
     public Player(Grid grid_point){
         super(grid_point.getX(),grid_point.getY());
-        this.hit_points=3;
+        this.hit_points=15;
         this.action_timer=0;
         this.weapon_switch_timer=0;
         this.walking=false;

@@ -16,6 +16,7 @@
 - **[14]** Set up procedurally generated map
 - **[15]** Set up enemies attacking and enemies and players dealing damage 
 - **[16]** Add new animations and sprites for player
+- **[19]** Add HUD
 
 ## Open Issues
 - **[17]** Fix bug where players can't see other player's currently equipped weapon

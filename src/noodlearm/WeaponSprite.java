@@ -26,6 +26,15 @@ public class WeaponSprite extends Entity{
         addImageWithBoundingBox(ResourceManager.getImage(weapon.texture));
     }
 
+    // Constructor for a weapon on the HUD
+    public WeaponSprite(float x, float y, String type){
+        super(x, y);
+        this.attacking = false;
+        this.weapon = new Weapon(type);
+        this.setScale((float) 0.125);
+        addImage(ResourceManager.getImage(weapon.texture));
+    }
+
     //Constructor for a weapon that is attacking from a player
     public WeaponSprite(Player player, int direction, Weapon weapon){
         super(player.getX(), player.getY());

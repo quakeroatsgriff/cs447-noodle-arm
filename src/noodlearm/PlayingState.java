@@ -1,10 +1,9 @@
 package noodlearm;
 
+import jig.ResourceManager;
+import jig.Shape;
 import jig.Vector;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -14,6 +13,7 @@ import java.util.Scanner;
 import java.util.Stack;
 
 public class PlayingState extends BasicGameState {
+    WeaponSprite equipped;
     @Override
     public int getID() {
         return Noodlearm.PLAYINGSTATE;
@@ -34,6 +34,7 @@ public class PlayingState extends BasicGameState {
         na.client = null;
 
         initTestLevel( na );
+        equipped = null;
 
         // simple echo server demonstration
 
@@ -80,7 +81,7 @@ public class PlayingState extends BasicGameState {
             grid_cell.translate( world_coordinate_translation );
         }
         for(Enemy enemy : na.enemies){
-            System.out.println(enemy.hit_points);
+//            System.out.println(enemy.hit_points);
             //Remove any enemies from the world if their health is 0 or less
             if(enemy.hit_points > 0){
                 enemy.translate(relative_coordinate_translation);
@@ -113,7 +114,25 @@ public class PlayingState extends BasicGameState {
         player.render(g);
         // move them back
         player.setPosition( old_postition );
-        g.drawString("Enemies Remaining: "+Integer.toString(na.enemies_alive), 200, 20);
+
+        g.setColor(Color.darkGray);
+        g.fillRect(0, 0, 600, 50);
+        g.fillRect(0, 700, 100, 100);
+        g.setColor(Color.white);
+        if (player.weapon != null) {
+            if (player.weapon.type.matches("SWORD")) {
+                equipped = new WeaponSprite(50, 750, "SWORD");
+                equipped.render(g);
+            } else if (player.weapon.type.matches("SPEAR")) {
+                equipped = new WeaponSprite(50, 750, "SPEAR");
+                equipped.render(g);
+            } else if (player.weapon.type.matches("CLUB")) {
+                equipped = new WeaponSprite(50, 750, "CLUB");
+                equipped.render(g);
+            }
+        }
+        g.drawString("Enemies Remaining: " + na.enemies_alive, 200, 10);
+        g.drawString("Health: " + player.hit_points, 500, 10);
     }
 
     @Override
