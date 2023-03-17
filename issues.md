@@ -17,7 +17,7 @@
 - **[15]** Set up enemies attacking and enemies and players dealing damage 
 - **[16]** Add new animations and sprites for player
 - **[19]** Add HUD
-- **[20]** Fix issue where enemies don't sync all the time between client and playerg
+- **[20]** Fix issue where enemies don't sync all the time between client and player
 - **[21]** Win/Lose conditions
 - **[22]** Scoring
 
