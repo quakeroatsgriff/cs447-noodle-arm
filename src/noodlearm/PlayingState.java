@@ -337,6 +337,16 @@ public class PlayingState extends BasicGameState {
             na.highlight=false;
             return;
         }
+        if(input.isKeyDown(Input.KEY_I)){
+            na.server.send_server_lose_level();
+            na.win_or_lose=false;
+            na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());        
+        }
+        if(input.isKeyDown(Input.KEY_O)){
+            na.server.send_server_win_level();
+            na.win_or_lose=true;
+            na.enterState(Noodlearm.WINLOSESTATE, new EmptyTransition(), new HorizontalSplitTransition());        
+        }
     }
 
     private void initTestLevel(Noodlearm na){

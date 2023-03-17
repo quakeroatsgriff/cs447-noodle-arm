@@ -14,7 +14,8 @@ A project for cs447, a top down pixel art style game where the objective is to c
 - right click = heavy attack
 - H = Turn on AI pathfinding highlight
 - J = Turn off AI pathfinding highlight
-
+- I = Lose Level
+- O = Win Level
 ## Low Bar Items
 ### - [x] = COMPLETE
 - [x] Player Movement with WASD
